@@ -18,12 +18,12 @@ public class RayReceiverContainer extends Container {
         // Player inventory (3 rows of 9)
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
-                addSlotToContainer(new Slot(player.inventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
+                addSlotToContainer(new Slot(player.inventory, col + row * 9 + 9, 9 + col * 18, 103 + row * 18));
             }
         }
         // Player hotbar
         for (int col = 0; col < 9; col++) {
-            addSlotToContainer(new Slot(player.inventory, col, 8 + col * 18, 142));
+            addSlotToContainer(new Slot(player.inventory, col, 9 + col * 18, 161));
         }
     }
 
