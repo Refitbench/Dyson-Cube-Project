@@ -25,7 +25,7 @@ public class DCPCommand extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/dysoncubeproject <set|add> <beams|panels> <sphereId> <value>";
+        return "/dysoncubeproject <get|set|add> <beams|panels> <sphereId> [value|max]";
     }
 
     @Override
@@ -35,17 +35,16 @@ public class DCPCommand extends CommandBase {
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-        if (args.length < 4) {
+        if (args.length < 3) {
             throw new WrongUsageException(getUsage(sender));
         }
 
-        String operation = args[0]; // set or add
+        String operation = args[0]; // get, set, or add
         String type = args[1];      // beams or panels
         String sphereId = args[2];
-        int value = parseInt(args[3]);
 
-        if (!operation.equals("set") && !operation.equals("add")) {
-            throw new WrongUsageException("First argument must be 'set' or 'add'");
+        if (!operation.equals("get") && !operation.equals("set") && !operation.equals("add")) {
+            throw new WrongUsageException("First argument must be 'get', 'set', or 'add'");
         }
         if (!type.equals("beams") && !type.equals("panels")) {
             throw new WrongUsageException("Second argument must be 'beams' or 'panels'");
@@ -60,23 +59,42 @@ public class DCPCommand extends CommandBase {
 
         DysonSphereStructure sphere = data.getSpheres().computeIfAbsent(sphereId, s -> new DysonSphereStructure());
 
+        if (operation.equals("get")) {
+            if (type.equals("beams")) {
+                sender.sendMessage(new TextComponentString(
+                        "Sphere '" + sphereId + "' beams: " + sphere.getBeams() + " / " + sphere.getMaxBeams()));
+            } else {
+                sender.sendMessage(new TextComponentString(
+                        "Sphere '" + sphereId + "' panels: " + sphere.getSolarPanels() + " / " + sphere.getMaxSolarPanels()));
+            }
+            return;
+        }
+
+        if (args.length < 4) {
+            throw new WrongUsageException(getUsage(sender));
+        }
+
+        String valueArg = args[3];
+
         if (type.equals("beams")) {
+            int inputVal = valueArg.equalsIgnoreCase("max") ? sphere.getMaxBeams() : parseInt(valueArg);
             int newVal;
             if (operation.equals("set")) {
-                newVal = Math.max(0, Math.min(value, sphere.getMaxBeams()));
+                newVal = Math.max(0, Math.min(inputVal, sphere.getMaxBeams()));
             } else {
-                newVal = Math.max(0, Math.min(sphere.getBeams() + value, sphere.getMaxBeams()));
+                newVal = Math.max(0, Math.min(sphere.getBeams() + inputVal, sphere.getMaxBeams()));
             }
             sphere.setBeams(newVal);
             data.markDirty();
             sender.sendMessage(new TextComponentString(
                     (operation.equals("set") ? "Set" : "Updated") + " beams for sphere '" + sphereId + "' to " + newVal));
         } else {
+            int inputVal = valueArg.equalsIgnoreCase("max") ? sphere.getMaxSolarPanels() : parseInt(valueArg);
             int newVal;
             if (operation.equals("set")) {
-                newVal = Math.max(0, Math.min(value, sphere.getMaxSolarPanels()));
+                newVal = Math.max(0, Math.min(inputVal, sphere.getMaxSolarPanels()));
             } else {
-                newVal = Math.max(0, Math.min(sphere.getSolarPanels() + value, sphere.getMaxSolarPanels()));
+                newVal = Math.max(0, Math.min(sphere.getSolarPanels() + inputVal, sphere.getMaxSolarPanels()));
             }
             sphere.setSolarPanels(newVal);
             data.markDirty();
@@ -88,7 +106,7 @@ public class DCPCommand extends CommandBase {
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
         if (args.length == 1) {
-            return getListOfStringsMatchingLastWord(args, "set", "add");
+            return getListOfStringsMatchingLastWord(args, "get", "set", "add");
         }
         if (args.length == 2) {
             return getListOfStringsMatchingLastWord(args, "beams", "panels");
@@ -99,6 +117,9 @@ public class DCPCommand extends CommandBase {
             if (data != null) {
                 return getListOfStringsMatchingLastWord(args, data.getSpheres().keySet());
             }
+        }
+        if (args.length == 4 && !args[0].equalsIgnoreCase("get")) {
+            return getListOfStringsMatchingLastWord(args, "max");
         }
         return Collections.emptyList();
     }

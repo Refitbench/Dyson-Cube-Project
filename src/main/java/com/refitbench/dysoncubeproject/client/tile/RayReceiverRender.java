@@ -1,19 +1,26 @@
 package com.refitbench.dysoncubeproject.client.tile;
 
 import com.refitbench.dysoncubeproject.block.tile.RayReceiverTileEntity;
+import com.refitbench.dysoncubeproject.Reference;
 import com.refitbench.dysoncubeproject.client.DCPExtraModels;
 import com.refitbench.dysoncubeproject.client.DCPShaderHelper;
 import com.refitbench.dysoncubeproject.client.DCPShaders;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL20;
 
 public class RayReceiverRender extends TileEntitySpecialRenderer<RayReceiverTileEntity> {
 
@@ -25,6 +32,13 @@ public class RayReceiverRender extends TileEntitySpecialRenderer<RayReceiverTile
         GlStateManager.translate(x, y, z);
 
         int light = te.getWorld().getCombinedLight(te.getPos().up(6), 0);
+        // If lighting is transitioning (freshly placed), scan upward for a valid value
+        if (light == 0) {
+            for (int dy = 7; dy <= 16 && light == 0; dy++) {
+                light = te.getWorld().getCombinedLight(te.getPos().up(dy), 0);
+            }
+            if (light == 0) light = 0xF000F0; // full-bright fallback
+        }
 
         // Base
         renderBakedModel(DCPExtraModels.RAY_RECEIVER_BASE, light);
@@ -132,26 +146,91 @@ public class RayReceiverRender extends TileEntitySpecialRenderer<RayReceiverTile
 
     private void renderBakedModel(IBakedModel model, int packedLight) {
         if (model == null) return;
+        renderDirectTexturedModel(model, packedLight);
+    }
+
+    private void renderDirectTexturedModel(IBakedModel model, int packedLight) {
+        java.util.List<BakedQuad> generalQuads = model.getQuads(null, null, 0L);
+        if (generalQuads.isEmpty()) return;
+
+        TextureAtlasSprite sprite = generalQuads.get(0).getSprite();
+        if (sprite == null || sprite.getIconName() == null) return;
+
+        float lightScale = getLightScale(packedLight);
         Minecraft mc = Minecraft.getMinecraft();
-        GlStateManager.disableLighting();
-        GlStateManager.enableTexture2D();
-        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-        mc.getTextureManager().bindTexture(net.minecraft.client.renderer.texture.TextureMap.LOCATION_BLOCKS_TEXTURE);
-        Tessellator tess = Tessellator.getInstance();
-        BufferBuilder buf = tess.getBuffer();
-        buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-        for (net.minecraft.client.renderer.block.model.BakedQuad quad : model.getQuads(null, null, 0L)) {
-            buf.addVertexData(quad.getVertexData());
-            buf.putBrightness4(packedLight, packedLight, packedLight, packedLight);
-        }
+        prepareDirectTextureDraw(mc, sprite, packedLight, lightScale);
+        renderQuadsImmediate(generalQuads, sprite, lightScale);
         for (EnumFacing face : EnumFacing.values()) {
-            for (net.minecraft.client.renderer.block.model.BakedQuad quad : model.getQuads(null, face, 0L)) {
-                buf.addVertexData(quad.getVertexData());
-                buf.putBrightness4(packedLight, packedLight, packedLight, packedLight);
-            }
+            renderQuadsImmediate(model.getQuads(null, face, 0L), sprite, lightScale);
         }
-        tess.draw();
+        GlStateManager.enableCull();
         GlStateManager.enableLighting();
+    }
+
+    private void prepareDirectTextureDraw(Minecraft mc, TextureAtlasSprite sprite, int packedLight, float lightScale) {
+        DCPShaderHelper.unbind();
+        GL20.glUseProgram(0);
+        OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        OpenGlHelper.setLightmapTextureCoords(
+            OpenGlHelper.lightmapTexUnit,
+            (float) (packedLight & 0xFFFF),
+            (float) ((packedLight >> 16) & 0xFFFF)
+        );
+        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
+        OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);
+        OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
+        GL13.glActiveTexture(GL13.GL_TEXTURE0);
+        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
+        GL11.glMatrixMode(GL11.GL_TEXTURE);
+        GL11.glLoadIdentity();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glColor4f(lightScale, lightScale, lightScale, 1.0f);
+        GlStateManager.disableLighting();
+        GlStateManager.disableCull();
+        GlStateManager.enableTexture2D();
+        GlStateManager.color(lightScale, lightScale, lightScale, 1.0f);
+        mc.getTextureManager().bindTexture(resolveDirectTexture(sprite));
+    }
+
+    private ResourceLocation resolveDirectTexture(TextureAtlasSprite sprite) {
+        String iconName = sprite.getIconName();
+        int split = iconName.indexOf(':');
+        String namespace = split >= 0 ? iconName.substring(0, split) : Reference.MOD_ID;
+        String path = split >= 0 ? iconName.substring(split + 1) : iconName;
+        return new ResourceLocation(namespace, "textures/" + path + ".png");
+    }
+
+    private void renderQuadsImmediate(java.util.List<BakedQuad> quads, TextureAtlasSprite sprite, float lightScale) {
+        float spanU = sprite.getMaxU() - sprite.getMinU();
+        float spanV = sprite.getMaxV() - sprite.getMinV();
+        for (BakedQuad quad : quads) {
+            int[] vertexData = quad.getVertexData();
+            int stride = vertexData.length / 4;
+            GL11.glBegin(GL11.GL_QUADS);
+            GL11.glColor4f(lightScale, lightScale, lightScale, 1.0f);
+            for (int vertex = 0; vertex < 4; vertex++) {
+                int base = vertex * stride;
+                float px = Float.intBitsToFloat(vertexData[base]);
+                float py = Float.intBitsToFloat(vertexData[base + 1]);
+                float pz = Float.intBitsToFloat(vertexData[base + 2]);
+                float atlasU = Float.intBitsToFloat(vertexData[base + 4]);
+                float atlasV = Float.intBitsToFloat(vertexData[base + 5]);
+                float localU = spanU == 0.0f ? 0.0f : (atlasU - sprite.getMinU()) / spanU;
+                float localV = spanV == 0.0f ? 0.0f : (atlasV - sprite.getMinV()) / spanV;
+                GL11.glTexCoord2f(localU, localV);
+                GL11.glVertex3f(px, py, pz);
+            }
+            GL11.glEnd();
+        }
+    }
+
+    private float getLightScale(int packedLight) {
+        int sky = (packedLight >> 20) & 0xF;
+        int block = (packedLight >> 4) & 0xF;
+        float level = Math.max(sky, block) / 15.0f;
+        return Math.max(0.2f, level);
     }
 
     @Override

@@ -22,6 +22,29 @@ public abstract class DefaultMultiblockControllerBlock extends Block {
         setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
     }
 
+    @Override
+    public net.minecraft.util.EnumBlockRenderType getRenderType(IBlockState state) {
+        // Skip chunk-builder geometry — the TESR renders this block entirely.
+        // Without this, a gray iron block is baked into the chunk and visible whenever
+        // the TESR is frustum-culled.
+        return net.minecraft.util.EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
+    }
+
+    @Override
+    public boolean isOpaqueCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public boolean isFullCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public int getLightOpacity(IBlockState state) {
+        return 0;
+    }
+
     public abstract MultiblockStructure getMultiblockStructure();
 
     @Override

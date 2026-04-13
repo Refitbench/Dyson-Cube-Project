@@ -5,6 +5,7 @@ import com.refitbench.dysoncubeproject.DCPContent;
 import com.refitbench.dysoncubeproject.item.DysonComponentItem;
 import com.refitbench.dysoncubeproject.world.DysonSphereProgressSavedData;
 import com.refitbench.dysoncubeproject.world.DysonSphereStructure;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -19,6 +20,7 @@ import javax.annotation.Nullable;
 
 public class EMRailEjectorTileEntity extends TileEntity implements ITickable {
 
+    private boolean needsClientRenderRefresh = true;
     private float currentYaw = 180;
     private float currentPitch = 90;
     private float targetYaw = 180;
@@ -26,14 +28,14 @@ public class EMRailEjectorTileEntity extends TileEntity implements ITickable {
     private long lastExecution = 0;
     private int progress = 0;
     private int maxProgress = 120;
-    private String dysonSphereId = "";
-    private int rampupAmount = 0;
+    private String dysonSphereId = "default";
+    private int rampupAmount = 1;
     private int cooldown = 0;
 
     private final ItemStackHandler input = new ItemStackHandler(1) {
         @Override
         public net.minecraft.item.ItemStack insertItem(int slot, net.minecraft.item.ItemStack stack, boolean simulate) {
-            if (DysonComponentItem.getSolarSailCount(stack) <= 0 && DysonComponentItem.getBeamCount(stack) <= 0) {
+            if (!(stack.getItem() instanceof com.refitbench.dysoncubeproject.item.DysonComponentItem)) {
                 return stack;
             }
             return super.insertItem(slot, stack, simulate);
@@ -41,6 +43,18 @@ public class EMRailEjectorTileEntity extends TileEntity implements ITickable {
     };
 
     private final WritableEnergyStorage power = new WritableEnergyStorage(Config.RAIL_EJECTOR_POWER_BUFFER, Config.RAIL_EJECTOR_POWER_BUFFER, 0);
+
+    private void refreshClientRender() {
+        if (world == null || !world.isRemote) return;
+        world.markBlockRangeForRenderUpdate(pos.add(-2, 0, -2), pos.add(2, 4, 2));
+        needsClientRenderRefresh = false;
+    }
+
+    private void syncRenderStateToClient() {
+        if (world == null || world.isRemote) return;
+        IBlockState state = world.getBlockState(pos);
+        world.notifyBlockUpdate(pos, state, state, 3);
+    }
 
     @Override
     public void update() {
@@ -81,27 +95,39 @@ public class EMRailEjectorTileEntity extends TileEntity implements ITickable {
         }
 
         if (world.isRemote) {
+            if (needsClientRenderRefresh) {
+                refreshClientRender();
+            }
             clientTick();
             return;
         }
+
+        boolean syncRenderState = false;
 
         // Progress bar logic
         if (canIncrease()) {
             onTickWork();
             progress++;
+            syncRenderState = true;
             if (progress >= maxProgress) {
                 progress = 0;
                 onFinishWork();
+                syncRenderState = true;
             }
             markDirty();
         } else {
             if (progress > 0) {
                 progress = 0;
+                syncRenderState = true;
                 markDirty();
             }
         }
 
         if (cooldown > 0) cooldown--;
+
+        if (syncRenderState) {
+            syncRenderStateToClient();
+        }
     }
 
     private void clientTick() {
@@ -251,13 +277,16 @@ public class EMRailEjectorTileEntity extends TileEntity implements ITickable {
     // onDataPacket is added to TileEntity at runtime via Forge ASM
     public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
         readFromNBT(pkt.getNbtCompound());
+        needsClientRenderRefresh = true;
+        refreshClientRender();
     }
 
     // getRenderBoundingBox added to TileEntity at runtime via Forge ASM — no @Override
+    // Use a large finite box to avoid angle-specific culling artifacts in 1.12 frustum tests.
     public net.minecraft.util.math.AxisAlignedBB getRenderBoundingBox() {
         return new net.minecraft.util.math.AxisAlignedBB(
-            pos.getX() - 1, pos.getY(), pos.getZ() - 1,
-            pos.getX() + 2, pos.getY() + 3, pos.getZ() + 2
+            pos.getX() - 32, pos.getY() - 4, pos.getZ() - 32,
+            pos.getX() + 33, pos.getY() + 40, pos.getZ() + 33
         );
     }
 

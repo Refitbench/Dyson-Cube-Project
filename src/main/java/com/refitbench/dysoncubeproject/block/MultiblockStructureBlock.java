@@ -8,7 +8,6 @@ import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -29,6 +28,7 @@ public class MultiblockStructureBlock extends Block implements ITileEntityProvid
 
     public static void createStructure(World world, BlockPos controllerPos, BlockPos at) {
         world.setBlockState(at, DCPContent.MULTIBLOCK_STRUCTURE.getDefaultState());
+        world.checkLight(at); // force immediate light recalculation so TESR doesn't briefly sample 0
         var te = world.getTileEntity(at);
         if (te instanceof MultiblockStructureTileEntity structureTE) {
             structureTE.setControllerPos(controllerPos);
@@ -43,6 +43,21 @@ public class MultiblockStructureBlock extends Block implements ITileEntityProvid
     @Override
     public boolean isFullCube(IBlockState state) {
         return false;
+    }
+
+    @Override
+    public int getLightOpacity(IBlockState state) {
+        return 0; // fully transparent to light — prevents transient dark TESR renders
+    }
+
+    @Override
+    public boolean shouldSideBeRendered(IBlockState blockState, net.minecraft.world.IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+        return false;
+    }
+
+    @Override
+    public net.minecraft.util.EnumBlockRenderType getRenderType(IBlockState state) {
+        return net.minecraft.util.EnumBlockRenderType.INVISIBLE;
     }
 
     @Override

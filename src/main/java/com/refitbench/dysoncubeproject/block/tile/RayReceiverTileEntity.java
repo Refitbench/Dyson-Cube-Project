@@ -12,16 +12,22 @@ import net.minecraft.util.SoundCategory;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nullable;
 
 public class RayReceiverTileEntity extends TileEntity implements ITickable {
 
-    private String dysonSphereId = "";
+    private boolean needsClientRenderRefresh = true;
+    private String dysonSphereId = "default";
     private float currentPitch = 270;
 
     private final WritableEnergyStorage energyStorage = new WritableEnergyStorage(Config.RAY_RECEIVER_POWER_BUFFER, 0, Integer.MAX_VALUE);
+
+    private void refreshClientRender() {
+        if (world == null || !world.isRemote) return;
+        world.markBlockRangeForRenderUpdate(pos.add(-2, 0, -2), pos.add(2, 7, 2));
+        needsClientRenderRefresh = false;
+    }
 
     @Override
     public void update() {
@@ -38,6 +44,9 @@ public class RayReceiverTileEntity extends TileEntity implements ITickable {
         }
 
         if (world.isRemote) {
+            if (needsClientRenderRefresh) {
+                refreshClientRender();
+            }
             clientTick();
             return;
         }
@@ -76,10 +85,11 @@ public class RayReceiverTileEntity extends TileEntity implements ITickable {
     }
 
     // getRenderBoundingBox added to TileEntity at runtime via Forge ASM — no @Override
+    // Use a large finite box to avoid angle-specific culling artifacts in 1.12 frustum tests.
     public net.minecraft.util.math.AxisAlignedBB getRenderBoundingBox() {
         return new net.minecraft.util.math.AxisAlignedBB(
-            pos.getX() - 1, pos.getY(), pos.getZ() - 1,
-            pos.getX() + 2, pos.getY() + 6, pos.getZ() + 2
+            pos.getX() - 32, pos.getY() - 4, pos.getZ() - 32,
+            pos.getX() + 33, pos.getY() + 40, pos.getZ() + 33
         );
     }
 
@@ -141,6 +151,8 @@ public class RayReceiverTileEntity extends TileEntity implements ITickable {
     // onDataPacket is added to TileEntity at runtime via Forge ASM
     public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
         readFromNBT(pkt.getNbtCompound());
+        needsClientRenderRefresh = true;
+        refreshClientRender();
     }
 
     // --- Capabilities (hasCapability/getCapability added to TileEntity at runtime via Forge ASM) ---

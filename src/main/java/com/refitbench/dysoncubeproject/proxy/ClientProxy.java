@@ -16,6 +16,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -67,6 +68,18 @@ public class ClientProxy implements IProxy {
     @SubscribeEvent
     public static void onModelBake(ModelBakeEvent event) {
         DCPExtraModels.onModelBake(event);
+    }
+
+    @SubscribeEvent
+    public static void onTextureStitch(TextureStitchEvent.Pre event) {
+        // These textures are only referenced by TESR-baked submodels, so register them
+        // explicitly to guarantee they are present in the atlas on initial client load.
+        event.getMap().registerSprite(new ResourceLocation(Reference.MOD_ID, "block/em_railejector_controller"));
+        event.getMap().registerSprite(new ResourceLocation(Reference.MOD_ID, "block/em_railejector_gun"));
+        event.getMap().registerSprite(new ResourceLocation(Reference.MOD_ID, "block/ray_receiver_base"));
+        event.getMap().registerSprite(new ResourceLocation(Reference.MOD_ID, "block/ray_receiver_plate"));
+        event.getMap().registerSprite(new ResourceLocation(Reference.MOD_ID, "block/ray_receiver_lens"));
+        event.getMap().registerSprite(new ResourceLocation(Reference.MOD_ID, "block/particle"));
     }
 
     @SubscribeEvent

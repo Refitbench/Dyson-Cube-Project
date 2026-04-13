@@ -62,6 +62,14 @@ public class EMRailEjectorControllerBlock extends DefaultMultiblockControllerBlo
             // Create pillar above controller
             MultiblockStructureBlock.createStructure(world, pos, pos.up());
             MultiblockStructureBlock.createStructure(world, pos, pos.up(2));
+
+            // Force relight and client re-render across the placed structure volume.
+            var min = pos.add(-2, 0, -2);
+            var max = pos.add(2, 4, 2);
+            for (BlockPos p : BlockPos.getAllInBox(min, max)) {
+                world.checkLight(p);
+            }
+            world.markBlockRangeForRenderUpdate(min, max);
         }
     }
 

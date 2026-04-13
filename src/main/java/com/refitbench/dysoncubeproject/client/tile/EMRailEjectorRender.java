@@ -1,6 +1,6 @@
 package com.refitbench.dysoncubeproject.client.tile;
 
-import com.refitbench.dysoncubeproject.block.EMRailEjectorControllerBlock;
+import com.refitbench.dysoncubeproject.Reference;
 import com.refitbench.dysoncubeproject.block.tile.EMRailEjectorTileEntity;
 import com.refitbench.dysoncubeproject.client.DCPExtraModels;
 import com.refitbench.dysoncubeproject.client.DCPShaderHelper;
@@ -8,13 +8,18 @@ import com.refitbench.dysoncubeproject.client.DCPShaders;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL20;
 
 import java.util.Random;
 
@@ -28,6 +33,13 @@ public class EMRailEjectorRender extends TileEntitySpecialRenderer<EMRailEjector
         GlStateManager.translate(x, y, z);
 
         int light = entity.getWorld().getCombinedLight(entity.getPos().up(3), 0);
+        // If lighting is transitioning (freshly placed), scan upward for a valid value
+        if (light == 0) {
+            for (int dy = 4; dy <= 16 && light == 0; dy++) {
+                light = entity.getWorld().getCombinedLight(entity.getPos().up(dy), 0);
+            }
+            if (light == 0) light = 0xF000F0; // full-bright fallback
+        }
 
         // Render the base model
         renderBakedModel(DCPExtraModels.EM_RAILEJECTOR_BASE, light);
@@ -59,17 +71,20 @@ public class EMRailEjectorRender extends TileEntitySpecialRenderer<EMRailEjector
         float t = entity.getProgress();
 
         // CHARGING ANIMATION - electric arcs around muzzle
-        if (t >= period - chargeWindow && DCPShaders.RAIL_ELECTRIC != null) {
+        if (t >= period - chargeWindow) {
             float chargeT = (t - (period - chargeWindow)) / chargeWindow;
             float intensity = (float) Math.pow(chargeT, 3.0);
+            boolean useShader = DCPShaders.RAIL_ELECTRIC != null;
 
             GlStateManager.pushMatrix();
             GlStateManager.translate(0.12, 0.45, 0.5);
 
-            DCPShaders.RAIL_ELECTRIC.bind();
-            DCPShaders.RAIL_ELECTRIC.uploadMatrices();
-            DCPShaders.RAIL_ELECTRIC.setUniform1f("uTime", (gameTime + partialTicks) / 20.0f);
-            DCPShaders.RAIL_ELECTRIC.setUniform1f("uIntensity", intensity);
+            if (useShader) {
+                DCPShaders.RAIL_ELECTRIC.bind();
+                DCPShaders.RAIL_ELECTRIC.uploadMatrices();
+                DCPShaders.RAIL_ELECTRIC.setUniform1f("uTime", (gameTime + partialTicks) / 20.0f);
+                DCPShaders.RAIL_ELECTRIC.setUniform1f("uIntensity", intensity);
+            }
 
             GlStateManager.disableTexture2D();
             GlStateManager.enableBlend();
@@ -113,7 +128,7 @@ public class EMRailEjectorRender extends TileEntitySpecialRenderer<EMRailEjector
             }
 
             tess.draw();
-            DCPShaderHelper.unbind();
+            if (useShader) DCPShaderHelper.unbind();
             GlStateManager.depthMask(true);
             GlStateManager.enableCull();
             GlStateManager.disableBlend();
@@ -127,16 +142,19 @@ public class EMRailEjectorRender extends TileEntitySpecialRenderer<EMRailEjector
         float progress = timeSinceShot / shootWindow;
 
         // Rail beam
-        if (timeSinceShot > 0 && timeSinceShot < shootWindow && DCPShaders.RAIL_BEAM != null) {
+        if (timeSinceShot > 0 && timeSinceShot < shootWindow) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(0.12, 0.45, 0.5);
 
             float beamIntensity = 1.2f * (1.0f - progress);
+            boolean useShader = DCPShaders.RAIL_BEAM != null;
 
-            DCPShaders.RAIL_BEAM.bind();
-            DCPShaders.RAIL_BEAM.uploadMatrices();
-            DCPShaders.RAIL_BEAM.setUniform1f("uTime", (gameTime + partialTicks) / 20.0f);
-            DCPShaders.RAIL_BEAM.setUniform1f("uIntensity", beamIntensity);
+            if (useShader) {
+                DCPShaders.RAIL_BEAM.bind();
+                DCPShaders.RAIL_BEAM.uploadMatrices();
+                DCPShaders.RAIL_BEAM.setUniform1f("uTime", (gameTime + partialTicks) / 20.0f);
+                DCPShaders.RAIL_BEAM.setUniform1f("uIntensity", beamIntensity);
+            }
 
             GlStateManager.disableTexture2D();
             GlStateManager.enableBlend();
@@ -164,7 +182,7 @@ public class EMRailEjectorRender extends TileEntitySpecialRenderer<EMRailEjector
             buf.pos(0.0f, 0.0f, halfW).color(230, 255, 255, 255).endVertex();
 
             tess.draw();
-            DCPShaderHelper.unbind();
+            if (useShader) DCPShaderHelper.unbind();
             GlStateManager.depthMask(true);
             GlStateManager.enableCull();
             GlStateManager.disableBlend();
@@ -175,14 +193,17 @@ public class EMRailEjectorRender extends TileEntitySpecialRenderer<EMRailEjector
 
         // Shockwave ring at muzzle
         float shockDur = 6.0f;
-        if (timeSinceShot > 0 && timeSinceShot < shockDur && DCPShaders.RAIL_ELECTRIC != null) {
+        if (timeSinceShot > 0 && timeSinceShot < shockDur) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(0.12, 0.45, 0.5);
+            boolean useShader = DCPShaders.RAIL_ELECTRIC != null;
 
-            DCPShaders.RAIL_ELECTRIC.bind();
-            DCPShaders.RAIL_ELECTRIC.uploadMatrices();
-            DCPShaders.RAIL_ELECTRIC.setUniform1f("uTime", (gameTime + partialTicks) / 20.0f);
-            DCPShaders.RAIL_ELECTRIC.setUniform1f("uIntensity", 1.0f);
+            if (useShader) {
+                DCPShaders.RAIL_ELECTRIC.bind();
+                DCPShaders.RAIL_ELECTRIC.uploadMatrices();
+                DCPShaders.RAIL_ELECTRIC.setUniform1f("uTime", (gameTime + partialTicks) / 20.0f);
+                DCPShaders.RAIL_ELECTRIC.setUniform1f("uIntensity", 1.0f);
+            }
 
             GlStateManager.disableTexture2D();
             GlStateManager.enableBlend();
@@ -210,7 +231,7 @@ public class EMRailEjectorRender extends TileEntitySpecialRenderer<EMRailEjector
             }
 
             tess.draw();
-            DCPShaderHelper.unbind();
+            if (useShader) DCPShaderHelper.unbind();
             GlStateManager.depthMask(true);
             GlStateManager.enableCull();
             GlStateManager.disableBlend();
@@ -229,11 +250,14 @@ public class EMRailEjectorRender extends TileEntitySpecialRenderer<EMRailEjector
             renderBakedModel(DCPExtraModels.EM_RAILEJECTOR_PROJECTILE, light);
 
             // Additive glow quads
-            if (DCPShaders.RAIL_BEAM != null) {
-                DCPShaders.RAIL_BEAM.bind();
-                DCPShaders.RAIL_BEAM.uploadMatrices();
-                DCPShaders.RAIL_BEAM.setUniform1f("uTime", (gameTime + partialTicks) / 20.0f);
-                DCPShaders.RAIL_BEAM.setUniform1f("uIntensity", 1.2f);
+            {
+                boolean useShader = DCPShaders.RAIL_BEAM != null;
+                if (useShader) {
+                    DCPShaders.RAIL_BEAM.bind();
+                    DCPShaders.RAIL_BEAM.uploadMatrices();
+                    DCPShaders.RAIL_BEAM.setUniform1f("uTime", (gameTime + partialTicks) / 20.0f);
+                    DCPShaders.RAIL_BEAM.setUniform1f("uIntensity", 1.2f);
+                }
 
                 GlStateManager.disableTexture2D();
                 GlStateManager.enableBlend();
@@ -256,7 +280,7 @@ public class EMRailEjectorRender extends TileEntitySpecialRenderer<EMRailEjector
                 buf.pos(-s, 0.0f, s).color(230, 255, 255, 255).endVertex();
 
                 tess.draw();
-                DCPShaderHelper.unbind();
+                if (useShader) DCPShaderHelper.unbind();
                 GlStateManager.depthMask(true);
                 GlStateManager.enableCull();
                 GlStateManager.disableBlend();
@@ -271,26 +295,91 @@ public class EMRailEjectorRender extends TileEntitySpecialRenderer<EMRailEjector
 
     private void renderBakedModel(IBakedModel model, int packedLight) {
         if (model == null) return;
+        renderDirectTexturedModel(model, packedLight);
+    }
+
+    private void renderDirectTexturedModel(IBakedModel model, int packedLight) {
+        java.util.List<BakedQuad> generalQuads = model.getQuads(null, null, 0L);
+        if (generalQuads.isEmpty()) return;
+
+        TextureAtlasSprite sprite = generalQuads.get(0).getSprite();
+        if (sprite == null || sprite.getIconName() == null) return;
+
+        float lightScale = getLightScale(packedLight);
         Minecraft mc = Minecraft.getMinecraft();
-        GlStateManager.disableLighting();
-        GlStateManager.enableTexture2D();
-        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-        mc.getTextureManager().bindTexture(net.minecraft.client.renderer.texture.TextureMap.LOCATION_BLOCKS_TEXTURE);
-        Tessellator tess = Tessellator.getInstance();
-        BufferBuilder buf = tess.getBuffer();
-        buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-        for (net.minecraft.client.renderer.block.model.BakedQuad quad : model.getQuads(null, null, 0L)) {
-            buf.addVertexData(quad.getVertexData());
-            buf.putBrightness4(packedLight, packedLight, packedLight, packedLight);
-        }
+        prepareDirectTextureDraw(mc, sprite, packedLight, lightScale);
+        renderQuadsImmediate(generalQuads, sprite, lightScale);
         for (EnumFacing face : EnumFacing.values()) {
-            for (net.minecraft.client.renderer.block.model.BakedQuad quad : model.getQuads(null, face, 0L)) {
-                buf.addVertexData(quad.getVertexData());
-                buf.putBrightness4(packedLight, packedLight, packedLight, packedLight);
-            }
+            renderQuadsImmediate(model.getQuads(null, face, 0L), sprite, lightScale);
         }
-        tess.draw();
+        GlStateManager.enableCull();
         GlStateManager.enableLighting();
+    }
+
+    private void prepareDirectTextureDraw(Minecraft mc, TextureAtlasSprite sprite, int packedLight, float lightScale) {
+        DCPShaderHelper.unbind();
+        GL20.glUseProgram(0);
+        OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        OpenGlHelper.setLightmapTextureCoords(
+            OpenGlHelper.lightmapTexUnit,
+            (float) (packedLight & 0xFFFF),
+            (float) ((packedLight >> 16) & 0xFFFF)
+        );
+        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
+        OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);
+        OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
+        GL13.glActiveTexture(GL13.GL_TEXTURE0);
+        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
+        GL11.glMatrixMode(GL11.GL_TEXTURE);
+        GL11.glLoadIdentity();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glColor4f(lightScale, lightScale, lightScale, 1.0f);
+        GlStateManager.disableLighting();
+        GlStateManager.disableCull();
+        GlStateManager.enableTexture2D();
+        GlStateManager.color(lightScale, lightScale, lightScale, 1.0f);
+        mc.getTextureManager().bindTexture(resolveDirectTexture(sprite));
+    }
+
+    private ResourceLocation resolveDirectTexture(TextureAtlasSprite sprite) {
+        String iconName = sprite.getIconName();
+        int split = iconName.indexOf(':');
+        String namespace = split >= 0 ? iconName.substring(0, split) : Reference.MOD_ID;
+        String path = split >= 0 ? iconName.substring(split + 1) : iconName;
+        return new ResourceLocation(namespace, "textures/" + path + ".png");
+    }
+
+    private void renderQuadsImmediate(java.util.List<BakedQuad> quads, TextureAtlasSprite sprite, float lightScale) {
+        float spanU = sprite.getMaxU() - sprite.getMinU();
+        float spanV = sprite.getMaxV() - sprite.getMinV();
+        for (BakedQuad quad : quads) {
+            int[] vertexData = quad.getVertexData();
+            int stride = vertexData.length / 4;
+            GL11.glBegin(GL11.GL_QUADS);
+            GL11.glColor4f(lightScale, lightScale, lightScale, 1.0f);
+            for (int vertex = 0; vertex < 4; vertex++) {
+                int base = vertex * stride;
+                float px = Float.intBitsToFloat(vertexData[base]);
+                float py = Float.intBitsToFloat(vertexData[base + 1]);
+                float pz = Float.intBitsToFloat(vertexData[base + 2]);
+                float atlasU = Float.intBitsToFloat(vertexData[base + 4]);
+                float atlasV = Float.intBitsToFloat(vertexData[base + 5]);
+                float localU = spanU == 0.0f ? 0.0f : (atlasU - sprite.getMinU()) / spanU;
+                float localV = spanV == 0.0f ? 0.0f : (atlasV - sprite.getMinV()) / spanV;
+                GL11.glTexCoord2f(localU, localV);
+                GL11.glVertex3f(px, py, pz);
+            }
+            GL11.glEnd();
+        }
+    }
+
+    private float getLightScale(int packedLight) {
+        int sky = (packedLight >> 20) & 0xF;
+        int block = (packedLight >> 4) & 0xF;
+        float level = Math.max(sky, block) / 15.0f;
+        return Math.max(0.2f, level);
     }
 
     @Override

@@ -4,6 +4,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
 
 public class DysonComponentItem extends Item {
 
@@ -57,5 +58,13 @@ public class DysonComponentItem extends Item {
     public void initializeDefaults(ItemStack stack) {
         if (defaultSolarSail > 0) setSolarSailCount(stack, defaultSolarSail);
         if (defaultBeam > 0) setBeamCount(stack, defaultBeam);
+    }
+
+    @Override
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+        if (!isInCreativeTab(tab)) return;
+        ItemStack stack = new ItemStack(this);
+        initializeDefaults(stack);
+        items.add(stack);
     }
 }

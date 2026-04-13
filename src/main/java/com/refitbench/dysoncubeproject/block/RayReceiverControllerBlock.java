@@ -68,6 +68,14 @@ public class RayReceiverControllerBlock extends DefaultMultiblockControllerBlock
                     MultiblockStructureBlock.createStructure(world, pos, updatedAt);
                 }
             }
+
+            // Force relight and client re-render across the placed structure volume.
+            var min = pos.add(-2, 0, -2);
+            var max = pos.add(2, 7, 2);
+            for (BlockPos p : BlockPos.getAllInBox(min, max)) {
+                world.checkLight(p);
+            }
+            world.markBlockRangeForRenderUpdate(min, max);
         }
     }
 
