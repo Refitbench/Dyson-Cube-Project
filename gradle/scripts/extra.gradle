@@ -3,3 +3,15 @@
 
 // If you wish to use the default helper methods, uncomment the line below
 // apply from: 'gradle/scripts/helpers.gradle'
+
+// Expose Unimined-managed Minecraft jars to the Gradle Tooling API (VS Code/Buildship).
+// Buildship reads resolved `compileClasspath` configuration artifacts to build the Eclipse
+// .classpath. Unimined bypasses this by injecting its remapped MC jar directly into the
+// compileJava task. We bridge this by extending compileClasspath from both the Unimined
+// minecraft configuration and minecraftLibraries (which carries transitive deps like Netty).
+// NOTE: VS Code must use Java 25 for Gradle (java.gradle.java.home) since foundation:0.19.3
+// requires JVM 25+. Set in .vscode/settings.json.
+configurations {
+    compileClasspath.extendsFrom(configurations.minecraft)
+    compileClasspath.extendsFrom(configurations.minecraftLibraries)
+}
