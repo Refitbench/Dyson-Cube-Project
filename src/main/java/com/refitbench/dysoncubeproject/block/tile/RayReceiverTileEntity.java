@@ -25,6 +25,18 @@ public class RayReceiverTileEntity extends TileEntity implements ITickable {
 
     @Override
     public void update() {
+        // Lens tracking runs on both sides — client needs it for rendering
+        float targetPitch = world.getCelestialAngle(1f) * 360f;
+        if (targetPitch >= 90 && targetPitch <= 270) {
+            targetPitch = 270;
+        }
+
+        if (currentPitch % 360 <= targetPitch) {
+            currentPitch = Math.min((currentPitch + 1) % 360, targetPitch);
+        } else if (currentPitch > targetPitch) {
+            currentPitch = Math.max(currentPitch - 1, targetPitch);
+        }
+
         if (world.isRemote) {
             clientTick();
             return;
@@ -51,18 +63,6 @@ public class RayReceiverTileEntity extends TileEntity implements ITickable {
                 int received = cap.receiveEnergy(toSend, false);
                 energyStorage.setEnergyStored(energyStorage.getEnergyStored() - received);
             }
-        }
-
-        // Lens tracking
-        float targetPitch = world.getCelestialAngle(1f) * 360f;
-        if (targetPitch >= 90 && targetPitch <= 270) {
-            targetPitch = 270;
-        }
-
-        if (currentPitch % 360 <= targetPitch) {
-            currentPitch = Math.min(currentPitch + 1, targetPitch);
-        } else if (currentPitch > targetPitch) {
-            currentPitch = Math.max(currentPitch - 1, targetPitch);
         }
     }
 

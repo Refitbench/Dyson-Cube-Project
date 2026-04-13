@@ -44,30 +44,7 @@ public class EMRailEjectorTileEntity extends TileEntity implements ITickable {
 
     @Override
     public void update() {
-        if (world.isRemote) {
-            clientTick();
-            return;
-        }
-
-        // Progress bar logic
-        if (canIncrease()) {
-            onTickWork();
-            progress++;
-            if (progress >= maxProgress) {
-                progress = 0;
-                onFinishWork();
-            }
-            markDirty();
-        } else {
-            if (progress > 0) {
-                progress = 0;
-                markDirty();
-            }
-        }
-
-        if (cooldown > 0) cooldown--;
-
-        // Sun tracking
+        // Sun tracking runs on both sides — client needs it for rendering
         targetPitch = world.getCelestialAngle(1f) * 360f;
 
         if (targetPitch <= 10) targetPitch = 10;
@@ -102,6 +79,29 @@ public class EMRailEjectorTileEntity extends TileEntity implements ITickable {
         } else if (currentYaw > targetYaw) {
             currentYaw = Math.max(currentYaw - 1, targetYaw);
         }
+
+        if (world.isRemote) {
+            clientTick();
+            return;
+        }
+
+        // Progress bar logic
+        if (canIncrease()) {
+            onTickWork();
+            progress++;
+            if (progress >= maxProgress) {
+                progress = 0;
+                onFinishWork();
+            }
+            markDirty();
+        } else {
+            if (progress > 0) {
+                progress = 0;
+                markDirty();
+            }
+        }
+
+        if (cooldown > 0) cooldown--;
     }
 
     private void clientTick() {
