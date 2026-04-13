@@ -5,13 +5,20 @@
 // apply from: 'gradle/scripts/helpers.gradle'
 
 // Expose Unimined-managed Minecraft jars to the Gradle Tooling API (VS Code/Buildship).
-// Buildship reads resolved `compileClasspath` configuration artifacts to build the Eclipse
-// .classpath. Unimined bypasses this by injecting its remapped MC jar directly into the
-// compileJava task. We bridge this by extending compileClasspath from both the Unimined
-// minecraft configuration and minecraftLibraries (which carries transitive deps like Netty).
-// NOTE: VS Code must use Java 25 for Gradle (java.gradle.java.home) since foundation:0.19.3
-// requires JVM 25+. Set in .vscode/settings.json.
-configurations {
-    compileClasspath.extendsFrom(configurations.minecraft)
-    compileClasspath.extendsFrom(configurations.minecraftLibraries)
+// Buildship reads resolved `compileClasspath` artifacts to build the Eclipse .classpath, but
+// Unimined injects its remapped MC jar directly into the compileJava task, bypassing the config.
+// We bridge this by extending compileClasspath from the Unimined minecraft/minecraftLibraries
+// configs in afterEvaluate (so Unimined's own afterEvaluate has already registered them).
+// We also override TargetJvmVersion to 25 on compileClasspath: build.gradle sets
+// sourceCompatibility=VERSION_21 which forces TargetJvmVersion=21, causing Gradle to reject
+// foundation:0.19.3 (which requires Java 25+). The override is correct because the project
+// compiles with a Java 25 toolchain — the VERSION_21 setting only controls output bytecode level.
+import org.gradle.api.attributes.java.TargetJvmVersion
+
+afterEvaluate {
+    configurations.compileClasspath.attributes {
+        attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 25)
+    }
+    configurations.compileClasspath.extendsFrom(configurations.minecraft)
+    configurations.compileClasspath.extendsFrom(configurations.minecraftLibraries)
 }
