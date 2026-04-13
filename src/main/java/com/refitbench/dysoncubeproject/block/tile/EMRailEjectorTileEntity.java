@@ -253,6 +253,14 @@ public class EMRailEjectorTileEntity extends TileEntity implements ITickable {
         readFromNBT(pkt.getNbtCompound());
     }
 
+    // getRenderBoundingBox added to TileEntity at runtime via Forge ASM — no @Override
+    public net.minecraft.util.math.AxisAlignedBB getRenderBoundingBox() {
+        return new net.minecraft.util.math.AxisAlignedBB(
+            pos.getX() - 1, pos.getY(), pos.getZ() - 1,
+            pos.getX() + 2, pos.getY() + 3, pos.getZ() + 2
+        );
+    }
+
     // --- Capabilities (hasCapability/getCapability added to TileEntity at runtime via Forge ASM) ---
 
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {

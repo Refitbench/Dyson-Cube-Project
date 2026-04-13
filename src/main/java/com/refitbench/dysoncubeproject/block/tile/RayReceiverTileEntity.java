@@ -75,6 +75,14 @@ public class RayReceiverTileEntity extends TileEntity implements ITickable {
         }
     }
 
+    // getRenderBoundingBox added to TileEntity at runtime via Forge ASM — no @Override
+    public net.minecraft.util.math.AxisAlignedBB getRenderBoundingBox() {
+        return new net.minecraft.util.math.AxisAlignedBB(
+            pos.getX() - 1, pos.getY(), pos.getZ() - 1,
+            pos.getX() + 2, pos.getY() + 6, pos.getZ() + 2
+        );
+    }
+
     // --- Getters/Setters ---
 
     public String getDysonSphereId() { return dysonSphereId; }

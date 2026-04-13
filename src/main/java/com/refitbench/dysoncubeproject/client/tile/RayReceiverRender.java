@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.EnumFacing;
 import org.lwjgl.opengl.GL11;
 
 public class RayReceiverRender extends TileEntitySpecialRenderer<RayReceiverTileEntity> {
@@ -23,18 +24,20 @@ public class RayReceiverRender extends TileEntitySpecialRenderer<RayReceiverTile
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
 
+        int light = te.getWorld().getCombinedLight(te.getPos().up(6), 0);
+
         // Base
-        renderBakedModel(DCPExtraModels.RAY_RECEIVER_BASE);
+        renderBakedModel(DCPExtraModels.RAY_RECEIVER_BASE, light);
 
         // Plate (elevated)
         GlStateManager.translate(0, 2, 0);
-        renderBakedModel(DCPExtraModels.RAY_RECEIVER_PLATE);
+        renderBakedModel(DCPExtraModels.RAY_RECEIVER_PLATE, light);
 
         // Lens stands
         GlStateManager.pushMatrix();
         GlStateManager.translate(0, 2, 1);
         GlStateManager.rotate(90, 0, 1, 0);
-        renderBakedModel(DCPExtraModels.RAY_RECEIVER_LENS_STANDS);
+        renderBakedModel(DCPExtraModels.RAY_RECEIVER_LENS_STANDS, light);
 
         // Lens with pitch rotation (rotate around pivot)
         GlStateManager.translate(0, 0.55f, 0.5f);
@@ -45,7 +48,7 @@ public class RayReceiverRender extends TileEntitySpecialRenderer<RayReceiverTile
         GlStateManager.rotate(360 - te.getCurrentPitch() - 180, 1, 0, 0);
         GlStateManager.translate(0, -0.55f, -0.5f);
 
-        renderBakedModel(DCPExtraModels.RAY_RECEIVER_LENS);
+        renderBakedModel(DCPExtraModels.RAY_RECEIVER_LENS, light);
 
         GlStateManager.popMatrix();
 
@@ -127,19 +130,28 @@ public class RayReceiverRender extends TileEntitySpecialRenderer<RayReceiverTile
         buf.pos(maxX, minY, maxZ).color(ri, gi, bi, ai).endVertex();
     }
 
-    private void renderBakedModel(IBakedModel model) {
+    private void renderBakedModel(IBakedModel model, int packedLight) {
         if (model == null) return;
         Minecraft mc = Minecraft.getMinecraft();
+        GlStateManager.disableLighting();
         GlStateManager.enableTexture2D();
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
         mc.getTextureManager().bindTexture(net.minecraft.client.renderer.texture.TextureMap.LOCATION_BLOCKS_TEXTURE);
         Tessellator tess = Tessellator.getInstance();
         BufferBuilder buf = tess.getBuffer();
         buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-        mc.getBlockRendererDispatcher().getBlockModelRenderer().renderModelFlat(
-            mc.world, model, net.minecraft.init.Blocks.STONE.getDefaultState(),
-            net.minecraft.util.math.BlockPos.ORIGIN, buf, false, 0L
-        );
+        for (net.minecraft.client.renderer.block.model.BakedQuad quad : model.getQuads(null, null, 0L)) {
+            buf.addVertexData(quad.getVertexData());
+            buf.putBrightness4(packedLight, packedLight, packedLight, packedLight);
+        }
+        for (EnumFacing face : EnumFacing.values()) {
+            for (net.minecraft.client.renderer.block.model.BakedQuad quad : model.getQuads(null, face, 0L)) {
+                buf.addVertexData(quad.getVertexData());
+                buf.putBrightness4(packedLight, packedLight, packedLight, packedLight);
+            }
+        }
         tess.draw();
+        GlStateManager.enableLighting();
     }
 
     @Override

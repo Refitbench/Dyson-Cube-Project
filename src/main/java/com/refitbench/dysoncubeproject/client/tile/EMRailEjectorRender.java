@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import org.lwjgl.opengl.GL11;
 
@@ -26,8 +27,10 @@ public class EMRailEjectorRender extends TileEntitySpecialRenderer<EMRailEjector
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
 
+        int light = entity.getWorld().getCombinedLight(entity.getPos().up(3), 0);
+
         // Render the base model
-        renderBakedModel(DCPExtraModels.EM_RAILEJECTOR_BASE);
+        renderBakedModel(DCPExtraModels.EM_RAILEJECTOR_BASE, light);
 
         // Move to gun mount position
         GlStateManager.translate(0, 2.5, 0);
@@ -46,7 +49,7 @@ public class EMRailEjectorRender extends TileEntitySpecialRenderer<EMRailEjector
         GlStateManager.translate(0, -0.5f, -0.5f);
 
         // Render the gun model
-        renderBakedModel(DCPExtraModels.EM_RAILEJECTOR_GUN);
+        renderBakedModel(DCPExtraModels.EM_RAILEJECTOR_GUN, light);
 
         // Animation parameters
         long gameTime = entity.getWorld().getTotalWorldTime();
@@ -223,7 +226,7 @@ public class EMRailEjectorRender extends TileEntitySpecialRenderer<EMRailEjector
             GlStateManager.translate(0.75, -0.1, 0);
             GlStateManager.translate(distance, 0, 0);
 
-            renderBakedModel(DCPExtraModels.EM_RAILEJECTOR_PROJECTILE);
+            renderBakedModel(DCPExtraModels.EM_RAILEJECTOR_PROJECTILE, light);
 
             // Additive glow quads
             if (DCPShaders.RAIL_BEAM != null) {
@@ -266,19 +269,28 @@ public class EMRailEjectorRender extends TileEntitySpecialRenderer<EMRailEjector
         GlStateManager.popMatrix();
     }
 
-    private void renderBakedModel(IBakedModel model) {
+    private void renderBakedModel(IBakedModel model, int packedLight) {
         if (model == null) return;
         Minecraft mc = Minecraft.getMinecraft();
+        GlStateManager.disableLighting();
         GlStateManager.enableTexture2D();
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
         mc.getTextureManager().bindTexture(net.minecraft.client.renderer.texture.TextureMap.LOCATION_BLOCKS_TEXTURE);
         Tessellator tess = Tessellator.getInstance();
         BufferBuilder buf = tess.getBuffer();
         buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-        mc.getBlockRendererDispatcher().getBlockModelRenderer().renderModelFlat(
-            mc.world, model, net.minecraft.init.Blocks.STONE.getDefaultState(),
-            net.minecraft.util.math.BlockPos.ORIGIN, buf, false, 0L
-        );
+        for (net.minecraft.client.renderer.block.model.BakedQuad quad : model.getQuads(null, null, 0L)) {
+            buf.addVertexData(quad.getVertexData());
+            buf.putBrightness4(packedLight, packedLight, packedLight, packedLight);
+        }
+        for (EnumFacing face : EnumFacing.values()) {
+            for (net.minecraft.client.renderer.block.model.BakedQuad quad : model.getQuads(null, face, 0L)) {
+                buf.addVertexData(quad.getVertexData());
+                buf.putBrightness4(packedLight, packedLight, packedLight, packedLight);
+            }
+        }
         tess.draw();
+        GlStateManager.enableLighting();
     }
 
     @Override
