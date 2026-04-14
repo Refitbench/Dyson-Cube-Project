@@ -1,4 +1,4 @@
-package com.example.modid.proxy;
+package com.refitbench.dysoncubeproject.proxy;
 
 public class CommonProxy implements IProxy {
 }
