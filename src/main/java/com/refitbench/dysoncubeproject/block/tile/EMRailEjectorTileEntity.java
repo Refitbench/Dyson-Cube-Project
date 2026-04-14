@@ -154,7 +154,12 @@ public class EMRailEjectorTileEntity extends TileEntity implements ITickable {
         if (solarPanels > 0 && (dyson.getSolarPanels() + solarPanels) >= dyson.getMaxSolarPanels()) return false;
         if (beams > 0 && dyson.getBeams() >= dyson.getMaxBeams()) return false;
 
-        if (rampupAmount > 1 && power.getEnergyStored() < (Math.pow(rampupAmount, 2) * Config.RAIL_EJECTOR_CONSUME)) {
+        int requiredPower = (int) (Math.pow(rampupAmount, 2) * Config.RAIL_EJECTOR_CONSUME);
+        if (Config.RAIL_EJECTOR_REQUIRE_POWER && power.getEnergyStored() < requiredPower) {
+            return false;
+        }
+
+        if (rampupAmount > 1 && power.getEnergyStored() < requiredPower) {
             rampupAmount = 1;
             return false;
         }
@@ -163,7 +168,10 @@ public class EMRailEjectorTileEntity extends TileEntity implements ITickable {
     }
 
     private void onTickWork() {
-        int drain = (int) Math.min(power.getEnergyStored(), Math.pow(rampupAmount, 2) * Config.RAIL_EJECTOR_CONSUME);
+        int requiredPower = (int) (Math.pow(rampupAmount, 2) * Config.RAIL_EJECTOR_CONSUME);
+        int drain = Config.RAIL_EJECTOR_REQUIRE_POWER
+                ? requiredPower
+                : (int) Math.min(power.getEnergyStored(), requiredPower);
         power.drainInternal(drain);
     }
 

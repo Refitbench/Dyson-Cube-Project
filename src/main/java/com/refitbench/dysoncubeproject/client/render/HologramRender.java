@@ -59,7 +59,7 @@ public class HologramRender {
         double maxY = max.getY() + eps;
         double maxZ = max.getZ() + eps;
 
-        // Get camera offset for world-space rendering
+        // Render the preview volume in world space relative to the camera.
         float partialTicks = event.getPartialTicks();
         double camX = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
         double camY = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
@@ -80,7 +80,6 @@ public class HologramRender {
             DCPShaders.HOLOGRAM.uploadMatrices();
             DCPShaders.HOLOGRAM.setUniform1f("uTime", (world.getTotalWorldTime() % 100000) / 20.0f);
             DCPShaders.HOLOGRAM.setUniform1f("uValid", valid ? 1.0f : 0.0f);
-            DCPShaders.HOLOGRAM.setUniform3f("uCamPos", (float) camX, (float) camY, (float) camZ);
 
             GlStateManager.disableTexture2D();
             GlStateManager.enableBlend();

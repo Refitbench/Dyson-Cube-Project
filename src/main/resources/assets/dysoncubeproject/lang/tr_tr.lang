@@ -24,3 +24,5 @@ gui.dysoncubeproject.sails=Yelkenler: %s/%s
 gui.dysoncubeproject.subscribe=Bu küreye abone ol
 tooltip.dysoncubeproject.contains_beams=%s kiriş içeriyor
 tooltip.dysoncubeproject.contains_solar_sails=%s güneş yelkeni içeriyor
+tooltip.dysoncubeproject.power_optional=*Güç isteğe bağlıdır, güç verilirse atılan kiriş/yelken sayısı artar*
+tooltip.dysoncubeproject.power_required=*Güç zorunludur, bu fırlatıcı kiriş/yelken atmak için FE ister*

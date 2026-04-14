@@ -1,14 +1,12 @@
 #version 150 compatibility
 
 in vec4 vColor;
-in vec3 vWorldPos;// actually view-space position passed from CPU; we will offset by camera to get true world-space
+in vec3 vWorldPos;
 
 out vec4 fragColor;
 
 uniform float uTime;
 uniform float uValid;// 1.0 = valid placement, 0.0 = invalid
-uniform vec3 uCamPos;// camera world position
-
 // Simple hash/noise helpers
 float hash(float n) { return fract(sin(n) * 43758.5453); }
 float noise(vec2 x){
@@ -22,8 +20,7 @@ float noise(vec2 x){
 }
 
 void main() {
-    // Recover true world-space position using camera offset (CPU fed view-space coords)
-    vec3 worldPosBase = vWorldPos + uCamPos;
+    vec3 worldPosBase = vWorldPos;
 
     // Lightweight glitchiness: occasional horizontal tear bands that laterally offset the lattice phase
     float bandSize = 1.0;// pixels per band

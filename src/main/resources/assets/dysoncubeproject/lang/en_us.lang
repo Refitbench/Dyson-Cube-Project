@@ -25,5 +25,6 @@ gui.dysoncubeproject.subscribe=Subscribe to this sphere
 tooltip.dysoncubeproject.contains_beams=Contains %s beam(s)
 tooltip.dysoncubeproject.contains_solar_sails=Contains %s solar sail(s)
 tooltip.dysoncubeproject.power_optional=*Power Optional, with power it allows to ramp up how many beams/sails are ejected*
+tooltip.dysoncubeproject.power_required=*Power Required, ejector needs FE to launch beams/sails*
 dysoncubeproject.subtitle.railgun=Railgun fires
 dysoncubeproject.subtitle.ray=Ray receiver hums

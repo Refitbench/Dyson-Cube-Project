@@ -1,5 +1,6 @@
 package com.refitbench.dysoncubeproject.proxy;
 
+import com.refitbench.dysoncubeproject.Config;
 import com.refitbench.dysoncubeproject.DCPContent;
 import com.refitbench.dysoncubeproject.Reference;
 import com.refitbench.dysoncubeproject.block.tile.EMRailEjectorTileEntity;
@@ -94,7 +95,10 @@ public class ClientProxy implements IProxy {
             event.getToolTip().add("\u00a7b" + net.minecraft.client.resources.I18n.format("tooltip.dysoncubeproject.contains_beams", beams));
         }
         if (stack.getItem() == Item.getItemFromBlock(DCPContent.EM_RAILEJECTOR_CONTROLLER)) {
-            event.getToolTip().add("\u00a7b" + net.minecraft.client.resources.I18n.format("tooltip.dysoncubeproject.power_optional"));
+            String key = Config.RAIL_EJECTOR_REQUIRE_POWER
+                    ? "tooltip.dysoncubeproject.power_required"
+                    : "tooltip.dysoncubeproject.power_optional";
+            event.getToolTip().add("\u00a7b" + net.minecraft.client.resources.I18n.format(key));
         }
     }
 

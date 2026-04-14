@@ -14,6 +14,7 @@ public class Config {
     public static int RAY_RECEIVER_POWER_BUFFER = 100_000_000;
     public static int RAIL_EJECTOR_POWER_BUFFER = 400_000;
     public static int RAIL_EJECTOR_CONSUME = 40;
+        public static boolean RAIL_EJECTOR_REQUIRE_POWER = true;
 
     public static void load(File configFile) {
         var config = new Configuration(configFile);
@@ -37,6 +38,8 @@ public class Config {
                 "The power that the em railejector buffer has");
         RAIL_EJECTOR_CONSUME = config.getInt("RAIL_EJECTOR_CONSUME", "general", 40, 1, Integer.MAX_VALUE,
                 "The power that the em railejector consumes each tick per sent item");
+        RAIL_EJECTOR_REQUIRE_POWER = config.getBoolean("RAIL_EJECTOR_REQUIRE_POWER", "general", true,
+                "Require FE power for the EM Rail Ejector to operate. If false, base speed can run without power.");
 
         if (config.hasChanged()) {
             config.save();

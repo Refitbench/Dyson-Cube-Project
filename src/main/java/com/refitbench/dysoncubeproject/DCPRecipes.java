@@ -8,6 +8,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -20,7 +21,7 @@ public class DCPRecipes {
         if (!new net.minecraft.util.ResourceLocation("minecraft", "recipes").equals(event.getName())) return;
         IForgeRegistry registry = event.getRegistry();
 
-        // EM Rail Ejector Controller: DRB / RCB / SSS
+        // EM Rail Ejector Controller: DRB / RCB / SSS (copper if available, else gold)
         register(registry, "em_railejector_controller",
                 new ShapedOreRecipe(
                         new ResourceLocation(Reference.MOD_ID, "em_railejector_controller"),
@@ -29,17 +30,17 @@ public class DCPRecipes {
                         'D', "gemDiamond",
                         'R', "dustRedstone",
                         'B', new ItemStack(DCPContent.BEAM),
-                        'C', "blockCopper",
+                        'C', OreDictionary.getOres("blockCopper").isEmpty() ? "blockGold" : "blockCopper",
                         'S', new ItemStack(Blocks.STONE_SLAB, 1, 0)));
 
-        // Solar Sail: GCG / GCG / LCL
+        // Solar Sail: GCG / GCG / LCL (copper if available, else gold)
         register(registry, "solar_sail",
                 new ShapedOreRecipe(
                         new ResourceLocation(Reference.MOD_ID, "solar_sail"),
                         new ItemStack(DCPContent.SOLAR_SAIL),
                         "GCG", "GCG", "LCL",
                         'G', "paneGlassColorless",
-                        'C', "ingotCopper",
+                        'C', OreDictionary.getOres("ingotCopper").isEmpty() ? "ingotGold" : "ingotCopper",
                         'L', "gemLapis"));
 
         // Solar Sail Package: GGG / GIG / GGG
@@ -61,14 +62,14 @@ public class DCPRecipes {
                         'I', "blockIron",
                         'B', new ItemStack(Blocks.IRON_BARS)));
 
-        // Beam Package: _G_ / GIG / _G_
+        // Beam Package: _G_ / GIG / _G_ (copper if available, else gold)
         register(registry, "beam_package",
                 new ShapedOreRecipe(
                         new ResourceLocation(Reference.MOD_ID, "beam_package"),
                         new ItemStack(DCPContent.BEAM_PACKAGE),
                         " G ", "GIG", " G ",
                         'G', new ItemStack(DCPContent.BEAM),
-                        'I', "blockCopper"));
+                        'I', OreDictionary.getOres("blockCopper").isEmpty() ? "blockGold" : "blockCopper"));
 
         // Ray Receiver Controller: SSS / NBN / III
         register(registry, "ray_receiver_controller",

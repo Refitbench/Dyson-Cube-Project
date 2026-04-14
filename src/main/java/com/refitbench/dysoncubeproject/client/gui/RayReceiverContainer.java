@@ -12,6 +12,15 @@ public class RayReceiverContainer extends Container {
     private final RayReceiverTileEntity tile;
     private int lastEnergy;
 
+    @Override
+    public void addListener(IContainerListener listener) {
+        super.addListener(listener);
+        // Force initial sync of energy when GUI opens
+        int energy = tile.getEnergyStorage().getEnergyStored();
+        listener.sendWindowProperty(this, 0, energy & 0xFFFF);
+        listener.sendWindowProperty(this, 1, (energy >> 16) & 0xFFFF);
+    }
+
     public RayReceiverContainer(EntityPlayer player, RayReceiverTileEntity tile) {
         this.tile = tile;
 
