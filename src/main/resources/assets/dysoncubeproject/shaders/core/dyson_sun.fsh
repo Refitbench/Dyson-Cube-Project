@@ -1,4 +1,4 @@
-#version 150
+#version 150 compatibility
 
 in vec4 vColor;
 in vec3 vWorldPos;// actually view-space position passed from CPU; we will offset by camera to get true world-space

@@ -1,7 +1,4 @@
-#version 150
-
-in vec3 Position;
-in vec4 Color;
+#version 150 compatibility
 
 uniform mat4 ModelViewMat;
 uniform mat4 ProjMat;
@@ -18,12 +15,13 @@ out float vSeed;// stable random seed per segment
 float hash(float n){ return fract(sin(n)*43758.5453); }
 
 void main() {
+    vec3 Position = gl_Vertex.xyz;
     // base position
     vec4 viewPos = ModelViewMat * vec4(Position, 1.0);
     gl_Position = ProjMat * viewPos;
 
     // Pass through base color
-    vColor = Color;
+    vColor = gl_Color;
 
     // A little vertex-based shimmer to break up lines
     float t = uTime * 6.2831853;// tau seconds

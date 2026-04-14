@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
@@ -21,6 +22,8 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
+
+import java.io.IOException;
 
 public class RayReceiverRender extends TileEntitySpecialRenderer<RayReceiverTileEntity> {
 
@@ -157,17 +160,18 @@ public class RayReceiverRender extends TileEntitySpecialRenderer<RayReceiverTile
         if (sprite == null || sprite.getIconName() == null) return;
 
         float lightScale = getLightScale(packedLight);
+        boolean atlasFallback = shouldUseAtlasFallback(sprite);
         Minecraft mc = Minecraft.getMinecraft();
-        prepareDirectTextureDraw(mc, sprite, packedLight, lightScale);
-        renderQuadsImmediate(generalQuads, sprite, lightScale);
+        prepareDirectTextureDraw(mc, sprite, packedLight, lightScale, atlasFallback);
+        renderQuadsImmediate(generalQuads, sprite, lightScale, atlasFallback);
         for (EnumFacing face : EnumFacing.values()) {
-            renderQuadsImmediate(model.getQuads(null, face, 0L), sprite, lightScale);
+            renderQuadsImmediate(model.getQuads(null, face, 0L), sprite, lightScale, atlasFallback);
         }
         GlStateManager.enableCull();
         GlStateManager.enableLighting();
     }
 
-    private void prepareDirectTextureDraw(Minecraft mc, TextureAtlasSprite sprite, int packedLight, float lightScale) {
+    private void prepareDirectTextureDraw(Minecraft mc, TextureAtlasSprite sprite, int packedLight, float lightScale, boolean atlasFallback) {
         DCPShaderHelper.unbind();
         GL20.glUseProgram(0);
         OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit);
@@ -191,18 +195,30 @@ public class RayReceiverRender extends TileEntitySpecialRenderer<RayReceiverTile
         GlStateManager.disableCull();
         GlStateManager.enableTexture2D();
         GlStateManager.color(lightScale, lightScale, lightScale, 1.0f);
-        mc.getTextureManager().bindTexture(resolveDirectTexture(sprite));
+        ResourceLocation directTexture = atlasFallback ? null : resolveDirectTexture(mc, sprite);
+        mc.getTextureManager().bindTexture(directTexture != null ? directTexture : TextureMap.LOCATION_BLOCKS_TEXTURE);
     }
 
-    private ResourceLocation resolveDirectTexture(TextureAtlasSprite sprite) {
+    private boolean shouldUseAtlasFallback(TextureAtlasSprite sprite) {
+        String iconName = sprite.getIconName();
+        return iconName == null || "missingno".equals(iconName) || iconName.endsWith(":missingno");
+    }
+
+    private ResourceLocation resolveDirectTexture(Minecraft mc, TextureAtlasSprite sprite) {
         String iconName = sprite.getIconName();
         int split = iconName.indexOf(':');
         String namespace = split >= 0 ? iconName.substring(0, split) : Reference.MOD_ID;
         String path = split >= 0 ? iconName.substring(split + 1) : iconName;
-        return new ResourceLocation(namespace, "textures/" + path + ".png");
+        ResourceLocation direct = new ResourceLocation(namespace, "textures/" + path + ".png");
+        try {
+            mc.getResourceManager().getResource(direct);
+            return direct;
+        } catch (IOException ignored) {
+            return null;
+        }
     }
 
-    private void renderQuadsImmediate(java.util.List<BakedQuad> quads, TextureAtlasSprite sprite, float lightScale) {
+    private void renderQuadsImmediate(java.util.List<BakedQuad> quads, TextureAtlasSprite sprite, float lightScale, boolean atlasFallback) {
         float spanU = sprite.getMaxU() - sprite.getMinU();
         float spanV = sprite.getMaxV() - sprite.getMinV();
         for (BakedQuad quad : quads) {
@@ -217,9 +233,13 @@ public class RayReceiverRender extends TileEntitySpecialRenderer<RayReceiverTile
                 float pz = Float.intBitsToFloat(vertexData[base + 2]);
                 float atlasU = Float.intBitsToFloat(vertexData[base + 4]);
                 float atlasV = Float.intBitsToFloat(vertexData[base + 5]);
-                float localU = spanU == 0.0f ? 0.0f : (atlasU - sprite.getMinU()) / spanU;
-                float localV = spanV == 0.0f ? 0.0f : (atlasV - sprite.getMinV()) / spanV;
-                GL11.glTexCoord2f(localU, localV);
+                if (atlasFallback) {
+                    GL11.glTexCoord2f(atlasU, atlasV);
+                } else {
+                    float localU = spanU == 0.0f ? 0.0f : (atlasU - sprite.getMinU()) / spanU;
+                    float localV = spanV == 0.0f ? 0.0f : (atlasV - sprite.getMinV()) / spanV;
+                    GL11.glTexCoord2f(localU, localV);
+                }
                 GL11.glVertex3f(px, py, pz);
             }
             GL11.glEnd();

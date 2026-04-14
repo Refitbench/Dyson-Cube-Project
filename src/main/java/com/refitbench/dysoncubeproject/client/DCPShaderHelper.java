@@ -19,9 +19,11 @@ import org.lwjgl.BufferUtils;
 public class DCPShaderHelper {
 
     private final int programId;
+    private final boolean legacyProfile;
 
-    private DCPShaderHelper(int programId) {
+    private DCPShaderHelper(int programId, boolean legacyProfile) {
         this.programId = programId;
+        this.legacyProfile = legacyProfile;
     }
 
     public static DCPShaderHelper load(String name) {
@@ -30,16 +32,34 @@ public class DCPShaderHelper {
             String vshSource = readResource(basePath + name + ".vsh");
             String fshSource = readResource(basePath + name + ".fsh");
 
-            int vsh = compileShader(GL20.GL_VERTEX_SHADER, vshSource, name + ".vsh");
-            int fsh = compileShader(GL20.GL_FRAGMENT_SHADER, fshSource, name + ".fsh");
+            int vsh;
+            int fsh;
+            boolean legacyProfile = false;
+
+            try {
+                vsh = compileShader(GL20.GL_VERTEX_SHADER, vshSource, name + ".vsh");
+                fsh = compileShader(GL20.GL_FRAGMENT_SHADER, fshSource, name + ".fsh");
+            } catch (RuntimeException primaryError) {
+                String vLegacy = toLegacyVertexSource(vshSource);
+                String fLegacy = toLegacyFragmentSource(fshSource);
+                if (vLegacy.equals(vshSource) || fLegacy.equals(fshSource)) {
+                    throw primaryError;
+                }
+
+                System.err.println("[DysonCubeProject] Falling back to GLSL 120 profile for shader '" + name + "'.");
+                System.err.println("[DysonCubeProject] Primary compile error: " + primaryError.getMessage());
+                vsh = compileShader(GL20.GL_VERTEX_SHADER, vLegacy, name + ".vsh [legacy120]");
+                fsh = compileShader(GL20.GL_FRAGMENT_SHADER, fLegacy, name + ".fsh [legacy120]");
+                legacyProfile = true;
+            }
 
             int program = GL20.glCreateProgram();
             GL20.glAttachShader(program, vsh);
             GL20.glAttachShader(program, fsh);
 
-            // Bind attribute locations to match the vertex format
-            GL20.glBindAttribLocation(program, 0, "Position");
-            GL20.glBindAttribLocation(program, 1, "Color");
+            // No glBindAttribLocation needed -- shaders use gl_Vertex/gl_Color
+            // built-ins which receive data from MC 1.12's fixed-function
+            // glVertexPointer/glColorPointer calls via the compatibility profile.
 
             GL20.glLinkProgram(program);
             if (GL20.glGetProgrami(program, GL20.GL_LINK_STATUS) == GL11.GL_FALSE) {
@@ -57,12 +77,29 @@ public class DCPShaderHelper {
             GL20.glDeleteShader(vsh);
             GL20.glDeleteShader(fsh);
 
-            return new DCPShaderHelper(program);
+            return new DCPShaderHelper(program, legacyProfile);
         } catch (Exception e) {
             System.err.println("[DysonCubeProject] Failed to load shader: " + name);
             e.printStackTrace();
             return null;
         }
+    }
+
+    private static String toLegacyVertexSource(String source) {
+        String legacy = source.replace("#version 150 compatibility", "#version 120");
+        legacy = legacy.replace("#version 150", "#version 120");
+        // gl_Vertex and gl_Color are built-in in GLSL 120, no changes needed for those
+        legacy = legacy.replaceAll("(?m)^\\s*out\\s+", "varying ");
+        return legacy;
+    }
+
+    private static String toLegacyFragmentSource(String source) {
+        String legacy = source.replace("#version 150 compatibility", "#version 120");
+        legacy = legacy.replace("#version 150", "#version 120");
+        legacy = legacy.replaceAll("(?m)^\\s*in\\s+", "varying ");
+        legacy = legacy.replaceAll("(?m)^\\s*out\\s+vec4\\s+fragColor\\s*;\\s*\\n?", "");
+        legacy = legacy.replace("fragColor", "gl_FragColor");
+        return legacy;
     }
 
     private static int compileShader(int type, String source, String name) {
@@ -127,6 +164,10 @@ public class DCPShaderHelper {
 
     public int getProgramId() {
         return programId;
+    }
+
+    public boolean isLegacyProfile() {
+        return legacyProfile;
     }
 
     public void delete() {
