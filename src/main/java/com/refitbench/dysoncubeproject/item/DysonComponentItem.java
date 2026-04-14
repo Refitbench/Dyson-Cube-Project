@@ -18,13 +18,25 @@ public class DysonComponentItem extends Item {
     }
 
     public static int getSolarSailCount(ItemStack stack) {
-        if (stack.isEmpty() || !stack.hasTagCompound()) return 0;
-        return stack.getTagCompound().getInteger("solar_sail");
+        if (stack.isEmpty()) return 0;
+        if (stack.hasTagCompound() && stack.getTagCompound().hasKey("solar_sail")) {
+            return stack.getTagCompound().getInteger("solar_sail");
+        }
+        if (stack.getItem() instanceof DysonComponentItem) {
+            return ((DysonComponentItem) stack.getItem()).defaultSolarSail;
+        }
+        return 0;
     }
 
     public static int getBeamCount(ItemStack stack) {
-        if (stack.isEmpty() || !stack.hasTagCompound()) return 0;
-        return stack.getTagCompound().getInteger("beam");
+        if (stack.isEmpty()) return 0;
+        if (stack.hasTagCompound() && stack.getTagCompound().hasKey("beam")) {
+            return stack.getTagCompound().getInteger("beam");
+        }
+        if (stack.getItem() instanceof DysonComponentItem) {
+            return ((DysonComponentItem) stack.getItem()).defaultBeam;
+        }
+        return 0;
     }
 
     public static void setSolarSailCount(ItemStack stack, int count) {
