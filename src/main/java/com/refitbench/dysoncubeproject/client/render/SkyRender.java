@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.Entity;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
@@ -42,6 +41,7 @@ public class SkyRender {
         DCPShaders.HOLO_HEX.setUniform1f("uTime", (gameTime % 100000) / 20.0f);
         DCPShaders.HOLO_HEX.setUniform1f("uValid", 1.0f);
         DCPShaders.HOLO_HEX.setUniform1f("uSize", 25f);
+        DCPShaders.HOLO_HEX.setUniform1f("uIsSkyPass", 1.0f);
         DCPShaders.HOLO_HEX.setUniform3f("uCamPos", 0f, 0f, 0f);
 
         GlStateManager.pushMatrix();
@@ -59,6 +59,8 @@ public class SkyRender {
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         GlStateManager.disableCull();
+        // Keep depth test enabled — sky-trick z=0.9999w means we only pass where
+        // existing depth is 1.0 (empty sky), so we are naturally occluded by terrain.
         GlStateManager.depthMask(false);
 
         float s = 30.0f;

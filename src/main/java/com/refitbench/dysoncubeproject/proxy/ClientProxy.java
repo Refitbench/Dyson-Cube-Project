@@ -88,10 +88,10 @@ public class ClientProxy implements IProxy {
         int sails = DysonComponentItem.getSolarSailCount(stack);
         int beams = DysonComponentItem.getBeamCount(stack);
         if (sails > 0) {
-            event.getToolTip().add("\u00a7b" + String.format(net.minecraft.client.resources.I18n.format("tooltip.dysoncubeproject.contains_solar_sails"), sails));
+            event.getToolTip().add("\u00a7b" + net.minecraft.client.resources.I18n.format("tooltip.dysoncubeproject.contains_solar_sails", sails));
         }
         if (beams > 0) {
-            event.getToolTip().add("\u00a7b" + String.format(net.minecraft.client.resources.I18n.format("tooltip.dysoncubeproject.contains_beams"), beams));
+            event.getToolTip().add("\u00a7b" + net.minecraft.client.resources.I18n.format("tooltip.dysoncubeproject.contains_beams", beams));
         }
         if (stack.getItem() == Item.getItemFromBlock(DCPContent.EM_RAILEJECTOR_CONTROLLER)) {
             event.getToolTip().add("\u00a7b" + net.minecraft.client.resources.I18n.format("tooltip.dysoncubeproject.power_optional"));

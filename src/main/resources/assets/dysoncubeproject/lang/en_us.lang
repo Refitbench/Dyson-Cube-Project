@@ -1,3 +1,11 @@
+tile.dysoncubeproject.em_railejector_controller.name=EM Rail Ejector Controller
+tile.dysoncubeproject.multiblock_structure.name=Multiblock Structure
+tile.dysoncubeproject.ray_receiver_controller.name=Ray Receiver Controller
+item.dysoncubeproject.beam.name=Beam
+item.dysoncubeproject.beam_package.name=Beam Package
+item.dysoncubeproject.solar_sail.name=Solar Sail
+item.dysoncubeproject.solar_sail_package.name=Solar Sail Package
+itemGroup.dysoncubeproject=Dyson Cube Project
 tile.em_railejector_controller.name=EM Rail Ejector Controller
 tile.multiblock_structure.name=Multiblock Structure
 tile.ray_receiver_controller.name=Ray Receiver Controller

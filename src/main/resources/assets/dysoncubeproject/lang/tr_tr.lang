@@ -1,3 +1,11 @@
+tile.dysoncubeproject.em_railejector_controller.name=EM Top Fırlatıcı Kontrolcüsü
+tile.dysoncubeproject.multiblock_structure.name=Çok Bloklu Yapı
+tile.dysoncubeproject.ray_receiver_controller.name=Işın Alıcı Kontrolcüsü
+item.dysoncubeproject.beam.name=Kiriş
+item.dysoncubeproject.beam_package.name=Kiriş Paketi
+item.dysoncubeproject.solar_sail.name=Güneş Yelkeni
+item.dysoncubeproject.solar_sail_package.name=Güneş Yelkeni Paketi
+itemGroup.dysoncubeproject=Dyson Cube Project
 tile.em_railejector_controller.name=EM Top Fırlatıcı Kontrolcüsü
 tile.multiblock_structure.name=Çok Bloklu Yapı
 tile.ray_receiver_controller.name=Işın Alıcı Kontrolcüsü

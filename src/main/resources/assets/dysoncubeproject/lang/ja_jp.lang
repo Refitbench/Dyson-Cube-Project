@@ -1,3 +1,11 @@
+tile.dysoncubeproject.em_railejector_controller.name=EMレールガン放射コントローラー
+tile.dysoncubeproject.multiblock_structure.name=マルチブロック構造物
+tile.dysoncubeproject.ray_receiver_controller.name=エネルギー光線受信コントローラー
+item.dysoncubeproject.beam.name=構造梁
+item.dysoncubeproject.beam_package.name=構造梁パッケージ
+item.dysoncubeproject.solar_sail.name=ソーラーセイル
+item.dysoncubeproject.solar_sail_package.name=ソーラーセイルパッケージ
+itemGroup.dysoncubeproject=Dyson Cube Project
 tile.em_railejector_controller.name=EMレールガン放射コントローラー
 tile.multiblock_structure.name=マルチブロック構造物
 tile.ray_receiver_controller.name=エネルギー光線受信コントローラー

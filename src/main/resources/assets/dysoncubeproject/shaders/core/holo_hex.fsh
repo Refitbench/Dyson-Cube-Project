@@ -81,8 +81,8 @@ float beehive_dist(vec2 p) {
 
 void main(){
 
-    // Recover true world-space position: CPU feeds camera-relative coords, add camera position
-    vec3 worldPos = vWorldPos + uCamPos;
+    // Use block-local coordinates for a camera-stable procedural pattern.
+    vec3 worldPos = vWorldPos;
 
     // Choose UV plane based on the dominant surface facing using geometric normal
     // This makes the pattern render properly on any face orientation (tri-planar style selection)
