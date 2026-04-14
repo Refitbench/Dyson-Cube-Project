@@ -2,11 +2,14 @@ package com.refitbench.dysoncubeproject.client;
 
 import com.refitbench.dysoncubeproject.Reference;
 import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
+
+import java.util.Objects;
 
 public class DCPExtraModels {
 
@@ -36,10 +39,13 @@ public class DCPExtraModels {
     private static IBakedModel bake(String path) {
         try {
             IModel model = ModelLoaderRegistry.getModel(new ResourceLocation(Reference.MOD_ID, path));
+            var modelState = Objects.requireNonNull(model.getDefaultState(), "Model state must not be null");
+            var vertexFormat = Objects.requireNonNull(DefaultVertexFormats.BLOCK, "Vertex format must not be null");
+            var textureGetter = Objects.requireNonNull(ModelLoader.defaultTextureGetter(), "Texture getter must not be null");
             return model.bake(
-                model.getDefaultState(),
-                net.minecraft.client.renderer.vertex.DefaultVertexFormats.BLOCK,
-                ModelLoader.defaultTextureGetter()
+                modelState,
+                vertexFormat,
+                textureGetter
             );
         } catch (Exception e) {
             System.err.println("[DysonCubeProject] Failed to bake model: " + path);

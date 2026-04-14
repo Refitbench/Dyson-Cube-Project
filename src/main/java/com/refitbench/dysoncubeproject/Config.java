@@ -20,8 +20,6 @@ public class Config {
         var config = new Configuration(configFile);
         config.load();
 
-        var category = config.getCategory("general");
-
         MAX_SOLAR_PANELS = config.getInt("MAX_SOLAR_PANELS", "general", 50_000_000, 1, Integer.MAX_VALUE,
                 "The maximum number of solar panels the Dyson Sphere can have");
         BEAM_TO_SOLAR_PANEL_RATIO = config.getInt("BEAM_TO_SOLAR_PANEL_RATIO", "general", 6, 1, Integer.MAX_VALUE,

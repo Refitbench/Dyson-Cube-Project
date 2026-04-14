@@ -30,7 +30,7 @@ public class EMRailEjectorGui extends GuiContainer {
     private static final int SUB_X = 9, SUB_Y = 78;
     private static final int INPUT_X = 4, INPUT_Y = 37;
 
-    // Titanium texture UV coordinates
+    // Texture UV coordinates
     private static final int ENERGY_BG_U = 177, ENERGY_BG_V = 94, ENERGY_BG_W = 18, ENERGY_BG_H = 56;
     private static final int ENERGY_FILL_U = 196, ENERGY_FILL_V = 97, ENERGY_FILL_W = 12, ENERGY_FILL_H = 50;
     private static final int PROGRESS_BORDER_U = 211, PROGRESS_BORDER_V = 1, PROGRESS_BORDER_W = 11, PROGRESS_BORDER_H = 56;
@@ -51,14 +51,14 @@ public class EMRailEjectorGui extends GuiContainer {
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         GlStateManager.color(1f, 1f, 1f, 1f);
 
-        // Titanium-style gray background with border
+        // Gray background with border
         drawRect(guiLeft, guiTop, guiLeft + xSize, guiTop + ySize, BG_LIGHT);
         drawHorizontalLine(guiLeft, guiLeft + xSize - 1, guiTop, BORDER_LIGHT);
         drawVerticalLine(guiLeft, guiTop, guiTop + ySize - 1, BORDER_LIGHT);
         drawHorizontalLine(guiLeft, guiLeft + xSize - 1, guiTop + ySize - 1, BORDER_DARK);
         drawVerticalLine(guiLeft + xSize - 1, guiTop, guiTop + ySize - 1, BORDER_DARK);
 
-        // Player inventory slots (background drawn 1px before slot position)
+        // Player inventory slots
         drawSlotGrid(guiLeft + 8, guiTop + 102, 9, 3);
         drawSlotGrid(guiLeft + 8, guiTop + 160, 9, 1);
 
@@ -69,7 +69,7 @@ public class EMRailEjectorGui extends GuiContainer {
         mc.getTextureManager().bindTexture(TEXTURE);
         GlStateManager.color(1f, 1f, 1f, 1f);
 
-        // Energy bar background (from texture)
+        // Energy bar background
         drawTexturedModalRect(guiLeft + ENERGY_X, guiTop + ENERGY_Y,
                 ENERGY_BG_U, ENERGY_BG_V, ENERGY_BG_W, ENERGY_BG_H);
 
@@ -86,15 +86,15 @@ public class EMRailEjectorGui extends GuiContainer {
             }
         }
 
-        // Progress bar border (from texture)
+        // Progress bar border
         drawTexturedModalRect(guiLeft + PROGRESS_X, guiTop + PROGRESS_Y,
                 PROGRESS_BORDER_U, PROGRESS_BORDER_V, PROGRESS_BORDER_W, PROGRESS_BORDER_H);
 
-        // Progress bar background (gray, inside border)
+        // Progress bar background
         drawTexturedModalRect(guiLeft + PROGRESS_X + 3, guiTop + PROGRESS_Y + 3,
                 PROGRESS_BG_U, PROGRESS_BG_V, PROGRESS_BG_W, PROGRESS_BG_H);
 
-        // Progress bar fill (cyan tinted, bottom-up)
+        // Progress bar fill (cyan, bottom-up)
         int maxProg = tile.getMaxProgress();
         if (maxProg > 0) {
             int prog = tile.getProgress();
@@ -109,7 +109,7 @@ public class EMRailEjectorGui extends GuiContainer {
             }
         }
 
-        // Subscribe button (from texture)
+        // Subscribe button
         drawTexturedModalRect(guiLeft + SUB_X, guiTop + SUB_Y,
                 BTN_PULL_U, BTN_PULL_V, BTN_PULL_W, BTN_PULL_H);
     }
@@ -144,7 +144,7 @@ public class EMRailEjectorGui extends GuiContainer {
             y += lineH;
         }
 
-        // Cyan border around info area
+        // Info area cyan border
         int infoX = x - 4;
         int infoY = INFO_Y - 4;
         int infoW = 112;

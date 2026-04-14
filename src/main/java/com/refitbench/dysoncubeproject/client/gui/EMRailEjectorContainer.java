@@ -21,7 +21,7 @@ public class EMRailEjectorContainer extends Container {
         // Input slot (the ejectable item slot)
         addSlotToContainer(new SlotItemHandler(tile.getInput(), 0, 5, 38));
 
-        // Player inventory (3 rows of 9)
+        // Player inventory
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
                 addSlotToContainer(new Slot(player.inventory, col + row * 9 + 9, 9 + col * 18, 103 + row * 18));

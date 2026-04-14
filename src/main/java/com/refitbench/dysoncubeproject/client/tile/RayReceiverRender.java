@@ -24,6 +24,7 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 
 import java.io.IOException;
+import java.util.List;
 
 public class RayReceiverRender extends TileEntitySpecialRenderer<RayReceiverTileEntity> {
 
@@ -154,7 +155,7 @@ public class RayReceiverRender extends TileEntitySpecialRenderer<RayReceiverTile
     }
 
     private void renderDirectTexturedModel(IBakedModel model, int packedLight) {
-        java.util.List<BakedQuad> generalQuads = model.getQuads(null, null, 0L);
+        List<BakedQuad> generalQuads = model.getQuads(null, null, 0L);
         if (generalQuads.isEmpty()) return;
 
         TextureAtlasSprite sprite = generalQuads.get(0).getSprite();
@@ -219,7 +220,7 @@ public class RayReceiverRender extends TileEntitySpecialRenderer<RayReceiverTile
         }
     }
 
-    private void renderQuadsImmediate(java.util.List<BakedQuad> quads, TextureAtlasSprite sprite, float lightScale, boolean atlasFallback) {
+    private void renderQuadsImmediate(List<BakedQuad> quads, TextureAtlasSprite sprite, float lightScale, boolean atlasFallback) {
         float spanU = sprite.getMaxU() - sprite.getMinU();
         float spanV = sprite.getMaxV() - sprite.getMinV();
         for (BakedQuad quad : quads) {

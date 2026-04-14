@@ -5,11 +5,15 @@ import com.refitbench.dysoncubeproject.DCPContent;
 import com.refitbench.dysoncubeproject.world.DysonSphereProgressSavedData;
 import com.refitbench.dysoncubeproject.world.DysonSphereStructure;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.EnergyStorage;
 
@@ -64,7 +68,7 @@ public class RayReceiverTileEntity extends TileEntity implements ITickable {
 
         // Push energy to block below (hasCapability/getCapability added via Forge ASM)
         var below = world.getTileEntity(pos.down());
-        if (below instanceof net.minecraftforge.common.capabilities.ICapabilityProvider provider
+        if (below instanceof ICapabilityProvider provider
                 && provider.hasCapability(CapabilityEnergy.ENERGY, EnumFacing.UP)) {
             var cap = provider.getCapability(CapabilityEnergy.ENERGY, EnumFacing.UP);
             if (cap != null && cap.canReceive()) {
@@ -84,12 +88,10 @@ public class RayReceiverTileEntity extends TileEntity implements ITickable {
         }
     }
 
-    // getRenderBoundingBox added to TileEntity at runtime via Forge ASM — no @Override
-    // Use a large finite box to avoid angle-specific culling artifacts in 1.12 frustum tests.
-    public net.minecraft.util.math.AxisAlignedBB getRenderBoundingBox() {
-        return new net.minecraft.util.math.AxisAlignedBB(
-            pos.getX() - 32, pos.getY() - 4, pos.getZ() - 32,
-            pos.getX() + 33, pos.getY() + 40, pos.getZ() + 33
+    public AxisAlignedBB getRenderBoundingBox() {
+        return new AxisAlignedBB(
+            pos.getX() - 1, pos.getY(), pos.getZ() - 1,
+            pos.getX() + 2, pos.getY() + 7, pos.getZ() + 2
         );
     }
 
@@ -144,12 +146,12 @@ public class RayReceiverTileEntity extends TileEntity implements ITickable {
     }
 
     @Override
-    public net.minecraft.network.play.server.SPacketUpdateTileEntity getUpdatePacket() {
-        return new net.minecraft.network.play.server.SPacketUpdateTileEntity(pos, 0, getUpdateTag());
+    public SPacketUpdateTileEntity getUpdatePacket() {
+        return new SPacketUpdateTileEntity(pos, 0, getUpdateTag());
     }
 
     // onDataPacket is added to TileEntity at runtime via Forge ASM
-    public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
         readFromNBT(pkt.getNbtCompound());
         needsClientRenderRefresh = true;
         refreshClientRender();

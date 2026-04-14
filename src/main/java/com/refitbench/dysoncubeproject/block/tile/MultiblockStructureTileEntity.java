@@ -1,6 +1,8 @@
 package com.refitbench.dysoncubeproject.block.tile;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 
@@ -40,12 +42,12 @@ public class MultiblockStructureTileEntity extends TileEntity {
     }
 
     @Override
-    public net.minecraft.network.play.server.SPacketUpdateTileEntity getUpdatePacket() {
-        return new net.minecraft.network.play.server.SPacketUpdateTileEntity(pos, 0, getUpdateTag());
+    public SPacketUpdateTileEntity getUpdatePacket() {
+        return new SPacketUpdateTileEntity(pos, 0, getUpdateTag());
     }
 
     // onDataPacket is added to TileEntity at runtime via Forge ASM
-    public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
         readFromNBT(pkt.getNbtCompound());
     }
 }

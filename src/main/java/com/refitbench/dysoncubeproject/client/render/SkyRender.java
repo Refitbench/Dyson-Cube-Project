@@ -4,7 +4,6 @@ import com.refitbench.dysoncubeproject.Config;
 import com.refitbench.dysoncubeproject.client.DCPShaderHelper;
 import com.refitbench.dysoncubeproject.client.DCPShaders;
 import com.refitbench.dysoncubeproject.world.ClientDysonSphere;
-import com.refitbench.dysoncubeproject.world.DysonSphereStructure;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;

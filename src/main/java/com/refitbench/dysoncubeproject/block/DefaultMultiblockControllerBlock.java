@@ -7,6 +7,7 @@ import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -23,11 +24,8 @@ public abstract class DefaultMultiblockControllerBlock extends Block {
     }
 
     @Override
-    public net.minecraft.util.EnumBlockRenderType getRenderType(IBlockState state) {
-        // Skip chunk-builder geometry — the TESR renders this block entirely.
-        // Without this, a gray iron block is baked into the chunk and visible whenever
-        // the TESR is frustum-culled.
-        return net.minecraft.util.EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
+    public EnumBlockRenderType getRenderType(IBlockState state) {
+        return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 
     @Override

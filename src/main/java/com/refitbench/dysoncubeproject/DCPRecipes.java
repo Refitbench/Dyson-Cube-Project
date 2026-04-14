@@ -12,14 +12,14 @@ import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.registries.IForgeRegistry;
 
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({"rawtypes", "unchecked"})
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public class DCPRecipes {
 
     @SubscribeEvent
-    public static void registerRecipes(RegistryEvent.Register event) {
-        if (!new net.minecraft.util.ResourceLocation("minecraft", "recipes").equals(event.getName())) return;
-        IForgeRegistry registry = event.getRegistry();
+        public static void registerRecipes(RegistryEvent.Register event) {
+                if (!new ResourceLocation("minecraft", "recipes").equals(event.getName())) return;
+                IForgeRegistry registry = event.getRegistry();
 
         // EM Rail Ejector Controller: DRB / RCB / SSS (copper if available, else gold)
         register(registry, "em_railejector_controller",
@@ -83,9 +83,8 @@ public class DCPRecipes {
                         'B', new ItemStack(DCPContent.BEAM)));
     }
 
-    @SuppressWarnings("unchecked")
-    private static void register(IForgeRegistry registry, String name, IRecipe recipe) {
+        private static void register(IForgeRegistry registry, String name, IRecipe recipe) {
         RegistryUtil.setRegistryName(recipe, Reference.MOD_ID, name);
-        registry.register((net.minecraftforge.registries.IForgeRegistryEntry) recipe);
+                RegistryUtil.register(registry, recipe);
     }
 }

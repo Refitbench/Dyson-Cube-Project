@@ -46,7 +46,7 @@ public class RayReceiverGui extends GuiContainer {
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         GlStateManager.color(1f, 1f, 1f, 1f);
 
-        // Titanium-style gray background with border
+        // Gray background with border
         drawRect(guiLeft, guiTop, guiLeft + xSize, guiTop + ySize, BG_LIGHT);
         drawHorizontalLine(guiLeft, guiLeft + xSize - 1, guiTop, BORDER_LIGHT);
         drawVerticalLine(guiLeft, guiTop, guiTop + ySize - 1, BORDER_LIGHT);
@@ -61,7 +61,7 @@ public class RayReceiverGui extends GuiContainer {
         mc.getTextureManager().bindTexture(TEXTURE);
         GlStateManager.color(1f, 1f, 1f, 1f);
 
-        // Energy bar background (from texture)
+        // Energy bar background
         drawTexturedModalRect(guiLeft + ENERGY_X, guiTop + ENERGY_Y,
                 ENERGY_BG_U, ENERGY_BG_V, ENERGY_BG_W, ENERGY_BG_H);
 
@@ -78,7 +78,7 @@ public class RayReceiverGui extends GuiContainer {
             }
         }
 
-        // Subscribe button (from texture)
+        // Subscribe button
         drawTexturedModalRect(guiLeft + SUB_X, guiTop + SUB_Y,
                 BTN_PULL_U, BTN_PULL_V, BTN_PULL_W, BTN_PULL_H);
     }
@@ -112,7 +112,7 @@ public class RayReceiverGui extends GuiContainer {
             y += lineH;
         }
 
-        // Cyan border around info area
+        // Info area cyan border
         int infoX = x - 4;
         int infoY = INFO_Y - 4;
         int infoW = 112;

@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({"rawtypes", "unchecked"})
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public class DCPContent {
 
@@ -55,7 +55,7 @@ public class DCPContent {
 
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register event) {
-        if (!new net.minecraft.util.ResourceLocation("minecraft", "blocks").equals(event.getName())) return;
+        if (!new ResourceLocation("minecraft", "blocks").equals(event.getName())) return;
         MULTIBLOCK_STRUCTURE = new MultiblockStructureBlock();
         EM_RAILEJECTOR_CONTROLLER = new EMRailEjectorControllerBlock();
         RAY_RECEIVER_CONTROLLER = new RayReceiverControllerBlock();
@@ -72,7 +72,7 @@ public class DCPContent {
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register event) {
-        if (!new net.minecraft.util.ResourceLocation("minecraft", "items").equals(event.getName())) return;
+        if (!new ResourceLocation("minecraft", "items").equals(event.getName())) return;
         IForgeRegistry registry = event.getRegistry();
 
         // Item blocks for placeable blocks
@@ -93,7 +93,7 @@ public class DCPContent {
 
     @SubscribeEvent
     public static void registerSounds(RegistryEvent.Register event) {
-        if (!new net.minecraft.util.ResourceLocation("minecraft", "soundevents").equals(event.getName())) return;
+        if (!new ResourceLocation("minecraft", "soundevents").equals(event.getName())) return;
         SOUND_RAILGUN = (SoundEvent) RegistryUtil.setRegistryName(
                 new SoundEvent(new ResourceLocation(Reference.MOD_ID, "railgun")),
                 Reference.MOD_ID, "railgun");

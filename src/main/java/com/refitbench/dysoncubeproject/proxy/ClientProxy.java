@@ -12,6 +12,7 @@ import com.refitbench.dysoncubeproject.client.render.SkyRender;
 import com.refitbench.dysoncubeproject.client.tile.EMRailEjectorRender;
 import com.refitbench.dysoncubeproject.client.tile.RayReceiverRender;
 import com.refitbench.dysoncubeproject.item.DysonComponentItem;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
@@ -89,16 +90,16 @@ public class ClientProxy implements IProxy {
         int sails = DysonComponentItem.getSolarSailCount(stack);
         int beams = DysonComponentItem.getBeamCount(stack);
         if (sails > 0) {
-            event.getToolTip().add("\u00a7b" + net.minecraft.client.resources.I18n.format("tooltip.dysoncubeproject.contains_solar_sails", sails));
+            event.getToolTip().add("\u00a7b" + I18n.format("tooltip.dysoncubeproject.contains_solar_sails", sails));
         }
         if (beams > 0) {
-            event.getToolTip().add("\u00a7b" + net.minecraft.client.resources.I18n.format("tooltip.dysoncubeproject.contains_beams", beams));
+            event.getToolTip().add("\u00a7b" + I18n.format("tooltip.dysoncubeproject.contains_beams", beams));
         }
         if (stack.getItem() == Item.getItemFromBlock(DCPContent.EM_RAILEJECTOR_CONTROLLER)) {
             String key = Config.RAIL_EJECTOR_REQUIRE_POWER
                     ? "tooltip.dysoncubeproject.power_required"
                     : "tooltip.dysoncubeproject.power_optional";
-            event.getToolTip().add("\u00a7b" + net.minecraft.client.resources.I18n.format(key));
+            event.getToolTip().add("\u00a7b" + I18n.format(key));
         }
     }
 

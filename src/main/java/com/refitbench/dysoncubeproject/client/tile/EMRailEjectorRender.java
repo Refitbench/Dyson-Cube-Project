@@ -22,6 +22,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 
+import java.util.Random;
+import java.util.List;
 import java.io.IOException;
 
 public class EMRailEjectorRender extends TileEntitySpecialRenderer<EMRailEjectorTileEntity> {
@@ -71,9 +73,7 @@ public class EMRailEjectorRender extends TileEntitySpecialRenderer<EMRailEjector
         float chargeWindow = 85f;
         float t = entity.getProgress();
 
-        // CHARGING ANIMATION - electric arcs around muzzle
-        // Matches upstream geometry: 38 rings × 7 segments, each segment emits 2 vertices
-        // into GL_QUADS. Consecutive pairs of segments form quads automatically.
+        // CHARGING ANIMATION
         if (t >= period - chargeWindow) {
             float chargeT = (t - (period - chargeWindow)) / chargeWindow; // 0..1
             float intensity = (float) Math.pow(chargeT, 3.0); // ramp up
@@ -91,7 +91,6 @@ public class EMRailEjectorRender extends TileEntitySpecialRenderer<EMRailEjector
 
             // PORT NOTE: Upstream RenderType uses TRANSLUCENT_TRANSPARENCY (SRC_ALPHA, ONE_MINUS_SRC_ALPHA).
             // The shader outputs HDR-range colors (glow up to 4.0) which makes additive unnecessary upstream.
-            // If this looks too dim on 1.12, switch DestFactor to ONE for additive blending.
             GlStateManager.disableTexture2D();
             GlStateManager.disableLighting();
             GlStateManager.enableBlend();
@@ -114,9 +113,8 @@ public class EMRailEjectorRender extends TileEntitySpecialRenderer<EMRailEjector
             int a = Math.min(255, 60 + (int) (195 * intensity));
 
             // PORT NOTE: Upstream uses entity.getLevel().getRandom() (world random source).
-            // In 1.12, entity.getWorld().rand is the equivalent. Both produce fresh
-            // values each frame, creating the intended per-frame electric jitter.
-            java.util.Random rng = entity.getWorld().rand;
+            // In 1.12, entity.getWorld().rand is the equivalent.
+            Random rng = entity.getWorld().rand;
 
             // Draw multiple short jittery segments forming rough arcs around the barrel (YZ plane circle)
             for (int ring = 0; ring < (int) (38 * chargeT); ring++) {
@@ -339,7 +337,7 @@ public class EMRailEjectorRender extends TileEntitySpecialRenderer<EMRailEjector
     }
 
     private void renderDirectTexturedModel(IBakedModel model, int packedLight) {
-        java.util.List<BakedQuad> generalQuads = model.getQuads(null, null, 0L);
+        List<BakedQuad> generalQuads = model.getQuads(null, null, 0L);
         if (generalQuads.isEmpty()) return;
 
         TextureAtlasSprite sprite = generalQuads.get(0).getSprite();
@@ -404,7 +402,7 @@ public class EMRailEjectorRender extends TileEntitySpecialRenderer<EMRailEjector
         }
     }
 
-    private void renderQuadsImmediate(java.util.List<BakedQuad> quads, TextureAtlasSprite sprite, float lightScale, boolean atlasFallback) {
+    private void renderQuadsImmediate(List<BakedQuad> quads, TextureAtlasSprite sprite, float lightScale, boolean atlasFallback) {
         float spanU = sprite.getMaxU() - sprite.getMinU();
         float spanV = sprite.getMaxV() - sprite.getMinV();
         for (BakedQuad quad : quads) {

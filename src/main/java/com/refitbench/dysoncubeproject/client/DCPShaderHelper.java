@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL20;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
 
 /**
@@ -62,7 +63,7 @@ public class DCPShaderHelper {
             // glVertexPointer/glColorPointer calls via the compatibility profile.
 
             GL20.glLinkProgram(program);
-            if (GL20.glGetProgrami(program, GL20.GL_LINK_STATUS) == GL11.GL_FALSE) {
+            if (getProgramStatus(program, GL20.GL_LINK_STATUS) == GL11.GL_FALSE) {
                 String log = GL20.glGetProgramInfoLog(program, 8192);
                 GL20.glDeleteProgram(program);
                 GL20.glDeleteShader(vsh);
@@ -106,12 +107,24 @@ public class DCPShaderHelper {
         int shader = GL20.glCreateShader(type);
         GL20.glShaderSource(shader, source);
         GL20.glCompileShader(shader);
-        if (GL20.glGetShaderi(shader, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE) {
+        if (getShaderStatus(shader, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE) {
             String log = GL20.glGetShaderInfoLog(shader, 8192);
             GL20.glDeleteShader(shader);
             throw new RuntimeException("Shader compile error in " + name + ": " + log);
         }
         return shader;
+    }
+
+    private static int getProgramStatus(int program, int pname) {
+        IntBuffer buf = BufferUtils.createIntBuffer(1);
+        GL20.glGetProgram(program, pname, buf);
+        return buf.get(0);
+    }
+
+    private static int getShaderStatus(int shader, int pname) {
+        IntBuffer buf = BufferUtils.createIntBuffer(1);
+        GL20.glGetShader(shader, pname, buf);
+        return buf.get(0);
     }
 
     private static String readResource(String path) throws Exception {

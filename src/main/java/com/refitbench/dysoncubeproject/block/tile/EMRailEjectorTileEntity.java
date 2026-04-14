@@ -6,8 +6,13 @@ import com.refitbench.dysoncubeproject.item.DysonComponentItem;
 import com.refitbench.dysoncubeproject.world.DysonSphereProgressSavedData;
 import com.refitbench.dysoncubeproject.world.DysonSphereStructure;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraftforge.common.capabilities.Capability;
@@ -34,7 +39,7 @@ public class EMRailEjectorTileEntity extends TileEntity implements ITickable {
 
     private final ItemStackHandler input = new ItemStackHandler(1) {
         @Override
-        public net.minecraft.item.ItemStack insertItem(int slot, net.minecraft.item.ItemStack stack, boolean simulate) {
+        public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
             if (!(stack.getItem() instanceof com.refitbench.dysoncubeproject.item.DysonComponentItem)) {
                 return stack;
             }
@@ -132,7 +137,7 @@ public class EMRailEjectorTileEntity extends TileEntity implements ITickable {
 
     private void clientTick() {
         if (progress == 7) {
-            world.playSound(pos.getX(), pos.getY(), pos.getZ(), DCPContent.SOUND_RAILGUN, net.minecraft.util.SoundCategory.BLOCKS, 1, 1, false);
+            world.playSound(pos.getX(), pos.getY(), pos.getZ(), DCPContent.SOUND_RAILGUN, SoundCategory.BLOCKS, 1, 1, false);
         }
     }
 
@@ -278,23 +283,21 @@ public class EMRailEjectorTileEntity extends TileEntity implements ITickable {
     }
 
     @Override
-    public net.minecraft.network.play.server.SPacketUpdateTileEntity getUpdatePacket() {
-        return new net.minecraft.network.play.server.SPacketUpdateTileEntity(pos, 0, getUpdateTag());
+    public SPacketUpdateTileEntity getUpdatePacket() {
+        return new SPacketUpdateTileEntity(pos, 0, getUpdateTag());
     }
 
     // onDataPacket is added to TileEntity at runtime via Forge ASM
-    public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
         readFromNBT(pkt.getNbtCompound());
         needsClientRenderRefresh = true;
         refreshClientRender();
     }
 
-    // getRenderBoundingBox added to TileEntity at runtime via Forge ASM — no @Override
-    // Use a large finite box to avoid angle-specific culling artifacts in 1.12 frustum tests.
-    public net.minecraft.util.math.AxisAlignedBB getRenderBoundingBox() {
-        return new net.minecraft.util.math.AxisAlignedBB(
-            pos.getX() - 32, pos.getY() - 4, pos.getZ() - 32,
-            pos.getX() + 33, pos.getY() + 40, pos.getZ() + 33
+    public AxisAlignedBB getRenderBoundingBox() {
+        return new AxisAlignedBB(
+            pos.getX() - 1, pos.getY(), pos.getZ() - 1,
+            pos.getX() + 2, pos.getY() + 5, pos.getZ() + 2
         );
     }
 

@@ -9,6 +9,7 @@ import com.refitbench.dysoncubeproject.world.DysonSphereStructure;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -44,7 +45,7 @@ public class DysonCubeProject {
     public void init(FMLInitializationEvent event) {
         LOGGER.info("Starting {} initialization", Reference.MOD_NAME);
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, new DCPGuiHandler());
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(this);
         proxy.init();
     }
 
