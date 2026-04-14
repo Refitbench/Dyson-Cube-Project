@@ -3,6 +3,7 @@ package com.refitbench.dysoncubeproject.client.render;
 import com.refitbench.dysoncubeproject.Config;
 import com.refitbench.dysoncubeproject.client.DCPShaderHelper;
 import com.refitbench.dysoncubeproject.client.DCPShaders;
+import com.refitbench.dysoncubeproject.client.compat.AdvancedRocketryCompat;
 import com.refitbench.dysoncubeproject.world.ClientDysonSphere;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -35,12 +36,19 @@ public class SkyRender {
         float partialTicks = event.getPartialTicks();
         float skyAngle = mc.world.getCelestialAngle(partialTicks) * 360.0f;
         long gameTime = mc.world.getTotalWorldTime();
+        float s = 30.0f;
+        boolean useRoundMask = AdvancedRocketryCompat.shouldUseRoundSkySunHolo();
+        float roundRadius = s * 0.7f;
 
         DCPShaders.HOLO_HEX.bind();
         DCPShaders.HOLO_HEX.setUniform1f("uTime", (gameTime % 100000) / 20.0f);
         DCPShaders.HOLO_HEX.setUniform1f("uValid", 1.0f);
         DCPShaders.HOLO_HEX.setUniform1f("uSize", 25f);
         DCPShaders.HOLO_HEX.setUniform1f("uIsSkyPass", 1.0f);
+        DCPShaders.HOLO_HEX.setUniform1f("uRoundMask", useRoundMask ? 1.0f : 0.0f);
+        DCPShaders.HOLO_HEX.setUniform1f("uRoundProgress", progress);
+        DCPShaders.HOLO_HEX.setUniform1f("uRoundRadius", roundRadius);
+        DCPShaders.HOLO_HEX.setUniform1f("uRoundCenterX", s);
         DCPShaders.HOLO_HEX.setUniform3f("uCamPos", 0f, 0f, 0f);
 
         GlStateManager.pushMatrix();
@@ -66,7 +74,6 @@ public class SkyRender {
         // existing depth is 1.0 (empty sky), so we are naturally occluded by terrain.
         GlStateManager.depthMask(false);
 
-        float s = 30.0f;
         float rainLevel = 1.0f - mc.world.getRainStrength(partialTicks);
         int r = (int)(0.5f * 255);
         int g = (int)(0.9f * 255);
@@ -77,10 +84,12 @@ public class SkyRender {
         BufferBuilder buf = tess.getBuffer();
         buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 
-        buf.pos(0, s, 0.0f).color(r, g, b, a).endVertex();
-        buf.pos(s * 2 * progress, s, 0.0f).color(r, g, b, a).endVertex();
-        buf.pos(s * 2 * progress, -s, 0.0f).color(r, g, b, a).endVertex();
-        buf.pos(0, -s, 0.0f).color(r, g, b, a).endVertex();
+        float minX = useRoundMask ? s - roundRadius : 0.0f;
+        float maxX = useRoundMask ? s + roundRadius : s * 2 * progress;
+        buf.pos(minX, s, 0.0f).color(r, g, b, a).endVertex();
+        buf.pos(maxX, s, 0.0f).color(r, g, b, a).endVertex();
+        buf.pos(maxX, -s, 0.0f).color(r, g, b, a).endVertex();
+        buf.pos(minX, -s, 0.0f).color(r, g, b, a).endVertex();
 
         tess.draw();
 
