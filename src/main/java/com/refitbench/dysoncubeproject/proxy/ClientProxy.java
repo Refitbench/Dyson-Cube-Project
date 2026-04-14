@@ -5,6 +5,10 @@ import com.refitbench.dysoncubeproject.DCPContent;
 import com.refitbench.dysoncubeproject.Reference;
 import com.refitbench.dysoncubeproject.block.tile.EMRailEjectorTileEntity;
 import com.refitbench.dysoncubeproject.block.tile.RayReceiverTileEntity;
+import com.refitbench.dysoncubeproject.client.gui.EMRailEjectorContainer;
+import com.refitbench.dysoncubeproject.client.gui.EMRailEjectorGui;
+import com.refitbench.dysoncubeproject.client.gui.RayReceiverContainer;
+import com.refitbench.dysoncubeproject.client.gui.RayReceiverGui;
 import com.refitbench.dysoncubeproject.client.DCPExtraModels;
 import com.refitbench.dysoncubeproject.client.DCPShaders;
 import com.refitbench.dysoncubeproject.client.render.HologramRender;
@@ -12,10 +16,14 @@ import com.refitbench.dysoncubeproject.client.render.SkyRender;
 import com.refitbench.dysoncubeproject.client.tile.EMRailEjectorRender;
 import com.refitbench.dysoncubeproject.client.tile.RayReceiverRender;
 import com.refitbench.dysoncubeproject.item.DysonComponentItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
@@ -52,6 +60,18 @@ public class ClientProxy implements IProxy {
     @Override
     public void postInit() {
         doPostInit();
+    }
+
+    @Override
+    public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
+        TileEntity te = world.getTileEntity(new BlockPos(x, y, z));
+        return switch (id) {
+            case DCPContent.GUI_EM_RAILEJECTOR -> te instanceof EMRailEjectorTileEntity ejector
+                    ? new EMRailEjectorGui(new EMRailEjectorContainer(player, ejector)) : null;
+            case DCPContent.GUI_RAY_RECEIVER -> te instanceof RayReceiverTileEntity receiver
+                    ? new RayReceiverGui(new RayReceiverContainer(player, receiver)) : null;
+            default -> null;
+        };
     }
 
     @SubscribeEvent

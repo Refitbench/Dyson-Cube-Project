@@ -1,6 +1,7 @@
 package com.refitbench.dysoncubeproject.client.gui;
 
 import com.refitbench.dysoncubeproject.DCPContent;
+import com.refitbench.dysoncubeproject.DysonCubeProject;
 import com.refitbench.dysoncubeproject.block.tile.EMRailEjectorTileEntity;
 import com.refitbench.dysoncubeproject.block.tile.RayReceiverTileEntity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -29,13 +30,6 @@ public class DCPGuiHandler implements IGuiHandler {
     @Nullable
     @Override
     public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
-        TileEntity te = world.getTileEntity(new BlockPos(x, y, z));
-        return switch (id) {
-            case DCPContent.GUI_EM_RAILEJECTOR -> te instanceof EMRailEjectorTileEntity ejector
-                    ? new EMRailEjectorGui(new EMRailEjectorContainer(player, ejector)) : null;
-            case DCPContent.GUI_RAY_RECEIVER -> te instanceof RayReceiverTileEntity receiver
-                    ? new RayReceiverGui(new RayReceiverContainer(player, receiver)) : null;
-            default -> null;
-        };
+        return DysonCubeProject.proxy.getClientGuiElement(id, player, world, x, y, z);
     }
 }
