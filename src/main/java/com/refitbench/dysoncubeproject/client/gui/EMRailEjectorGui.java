@@ -16,7 +16,7 @@ import java.text.DecimalFormat;
 public class EMRailEjectorGui extends GuiContainer {
 
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation("dysoncubeproject", "textures/gui/em_railejector.png");
+            new ResourceLocation("dysoncubeproject", "textures/gui/dysongui.png");
 
     private static final int CYAN = 0xFF00FFFF;
     private static final int BG_LIGHT = 0xFFC6C6C6;
