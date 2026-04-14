@@ -49,7 +49,11 @@ public class SkyRender {
         GlStateManager.rotate(90.0f, 1, 0, 0);
         GlStateManager.rotate(skyAngle, 1, 0, 0);
 
-        GlStateManager.translate(-30.0f, 0.0f, -310.0f);
+        // Flip the local-space correction after noon so the visible offset stays
+        // downward at both horizons while remaining neutral at high noon.
+        float skyAngleRadians = (float) Math.toRadians(skyAngle);
+        float horizonOffset = 3.0f * (float) Math.sin(skyAngleRadians);
+        GlStateManager.translate(-30.0f, horizonOffset, -310.0f);
 
         // Upload matrices after all transforms are applied
         DCPShaders.HOLO_HEX.uploadMatrices();
