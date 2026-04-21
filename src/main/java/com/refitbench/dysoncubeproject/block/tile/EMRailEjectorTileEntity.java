@@ -234,7 +234,7 @@ public class EMRailEjectorTileEntity extends TileEntity implements ITickable {
         }
 
         public void setEnergyStored(int energy) {
-            this.energy = Math.max(0, Math.min(capacity, energy));
+            this.energy = Math.clamp(energy, 0, capacity);
         }
 
         public void drainInternal(int amount) {
