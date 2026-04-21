@@ -13,6 +13,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.event.RegistryEvent;
@@ -42,6 +43,10 @@ public class DCPContent {
     public static Block MULTIBLOCK_STRUCTURE;
     public static Block EM_RAILEJECTOR_CONTROLLER;
     public static Block RAY_RECEIVER_CONTROLLER;
+
+    // Block items
+    public static Item EM_RAILEJECTOR_CONTROLLER_ITEM;
+    public static Item RAY_RECEIVER_CONTROLLER_ITEM;
 
     // Items
     public static Item SOLAR_SAIL;
@@ -76,8 +81,10 @@ public class DCPContent {
         IForgeRegistry registry = event.getRegistry();
 
         // Item blocks for placeable blocks
-        RegistryUtil.register(registry, createItemBlock(EM_RAILEJECTOR_CONTROLLER));
-        RegistryUtil.register(registry, createItemBlock(RAY_RECEIVER_CONTROLLER));
+        EM_RAILEJECTOR_CONTROLLER_ITEM = createItemBlock(EM_RAILEJECTOR_CONTROLLER);
+        RAY_RECEIVER_CONTROLLER_ITEM = createItemBlock(RAY_RECEIVER_CONTROLLER);
+        RegistryUtil.register(registry, EM_RAILEJECTOR_CONTROLLER_ITEM);
+        RegistryUtil.register(registry, RAY_RECEIVER_CONTROLLER_ITEM);
 
         // Dyson component items
         SOLAR_SAIL = createItem(new DysonComponentItem(1, 0, TAB), "solar_sail");
@@ -113,7 +120,12 @@ public class DCPContent {
     }
 
     private static ItemBlock createItemBlock(Block block) {
-        var ib = new ItemBlock(block);
+        var ib = new ItemBlock(block) {
+            @Override
+            public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+                if (tab == TAB) items.add(new ItemStack(this));
+            }
+        };
         RegistryUtil.setRegistryName(ib, RegistryUtil.getRegistryName(block));
         ib.setCreativeTab(TAB);
         return ib;
