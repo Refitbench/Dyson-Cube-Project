@@ -173,6 +173,7 @@ public class RayReceiverRender extends TileEntitySpecialRenderer<RayReceiverTile
         for (EnumFacing face : EnumFacing.values()) {
             renderQuadsImmediate(model.getQuads(null, face, 0L), sprite, lightScale, atlasFallback);
         }
+        GlStateManager.color(1f, 1f, 1f, 1f);
         GlStateManager.enableCull();
         GlStateManager.enableLighting();
     }
@@ -193,10 +194,11 @@ public class RayReceiverRender extends TileEntitySpecialRenderer<RayReceiverTile
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
         GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
         GL11.glMatrixMode(GL11.GL_TEXTURE);
+        GL11.glPushMatrix();
         GL11.glLoadIdentity();
+        GL11.glPopMatrix();
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glColor4f(lightScale, lightScale, lightScale, 1.0f);
         GlStateManager.disableLighting();
         GlStateManager.disableCull();
         GlStateManager.enableTexture2D();

@@ -62,10 +62,10 @@ public class DCPCommand extends CommandBase {
         if (operation.equals("get")) {
             if (type.equals("beams")) {
                 sender.sendMessage(new TextComponentString(
-                        "Sphere '" + sphereId + "' beams: " + sphere.getBeams() + " / " + sphere.getMaxBeams()));
+                        "Sphere '%s' beams: %d / %d".formatted(sphereId, sphere.getBeams(), sphere.getMaxBeams())));
             } else {
                 sender.sendMessage(new TextComponentString(
-                        "Sphere '" + sphereId + "' panels: " + sphere.getSolarPanels() + " / " + sphere.getMaxSolarPanels()));
+                        "Sphere '%s' panels: %d / %d".formatted(sphereId, sphere.getSolarPanels(), sphere.getMaxSolarPanels())));
             }
             return;
         }
@@ -80,26 +80,26 @@ public class DCPCommand extends CommandBase {
             int inputVal = valueArg.equalsIgnoreCase("max") ? sphere.getMaxBeams() : parseInt(valueArg);
             int newVal;
             if (operation.equals("set")) {
-                newVal = Math.max(0, Math.min(inputVal, sphere.getMaxBeams()));
+                newVal = Math.clamp(inputVal, 0, sphere.getMaxBeams());
             } else {
-                newVal = Math.max(0, Math.min(sphere.getBeams() + inputVal, sphere.getMaxBeams()));
+                newVal = Math.clamp(sphere.getBeams() + inputVal, 0, sphere.getMaxBeams());
             }
             sphere.setBeams(newVal);
             data.markDirty();
             sender.sendMessage(new TextComponentString(
-                    (operation.equals("set") ? "Set" : "Updated") + " beams for sphere '" + sphereId + "' to " + newVal));
+                    "%s beams for sphere '%s' to %d".formatted(operation.equals("set") ? "Set" : "Updated", sphereId, newVal)));
         } else {
             int inputVal = valueArg.equalsIgnoreCase("max") ? sphere.getMaxSolarPanels() : parseInt(valueArg);
             int newVal;
             if (operation.equals("set")) {
-                newVal = Math.max(0, Math.min(inputVal, sphere.getMaxSolarPanels()));
+                newVal = Math.clamp(inputVal, 0, sphere.getMaxSolarPanels());
             } else {
-                newVal = Math.max(0, Math.min(sphere.getSolarPanels() + inputVal, sphere.getMaxSolarPanels()));
+                newVal = Math.clamp(sphere.getSolarPanels() + inputVal, 0, sphere.getMaxSolarPanels());
             }
             sphere.setSolarPanels(newVal);
             data.markDirty();
             sender.sendMessage(new TextComponentString(
-                    (operation.equals("set") ? "Set" : "Updated") + " solar panels for sphere '" + sphereId + "' to " + newVal));
+                    "%s solar panels for sphere '%s' to %d".formatted(operation.equals("set") ? "Set" : "Updated", sphereId, newVal)));
         }
     }
 

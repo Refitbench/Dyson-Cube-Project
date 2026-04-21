@@ -24,8 +24,8 @@ public class DysonComponentItem extends Item {
         if (stack.hasTagCompound() && stack.getTagCompound().hasKey("solar_sail")) {
             return stack.getTagCompound().getInteger("solar_sail");
         }
-        if (stack.getItem() instanceof DysonComponentItem) {
-            return ((DysonComponentItem) stack.getItem()).defaultSolarSail;
+        if (stack.getItem() instanceof DysonComponentItem item) {
+            return item.defaultSolarSail;
         }
         return 0;
     }
@@ -35,8 +35,8 @@ public class DysonComponentItem extends Item {
         if (stack.hasTagCompound() && stack.getTagCompound().hasKey("beam")) {
             return stack.getTagCompound().getInteger("beam");
         }
-        if (stack.getItem() instanceof DysonComponentItem) {
-            return ((DysonComponentItem) stack.getItem()).defaultBeam;
+        if (stack.getItem() instanceof DysonComponentItem item) {
+            return item.defaultBeam;
         }
         return 0;
     }
