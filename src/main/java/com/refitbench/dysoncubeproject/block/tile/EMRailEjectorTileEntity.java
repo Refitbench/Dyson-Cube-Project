@@ -40,7 +40,7 @@ public class EMRailEjectorTileEntity extends TileEntity implements ITickable {
     private final ItemStackHandler input = new ItemStackHandler(1) {
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-            if (!(stack.getItem() instanceof com.refitbench.dysoncubeproject.item.DysonComponentItem)) {
+            if (!(stack.getItem() instanceof DysonComponentItem)) {
                 return stack;
             }
             return super.insertItem(slot, stack, simulate);
