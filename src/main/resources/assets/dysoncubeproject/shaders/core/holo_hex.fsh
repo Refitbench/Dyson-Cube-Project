@@ -9,6 +9,10 @@ uniform float uTime;// seconds
 uniform float uValid;// unused here but kept for compatibility
 uniform vec3 uCamPos;
 uniform float uSize;
+uniform float uRoundMask;
+uniform float uRoundProgress;
+uniform float uRoundRadius;
+uniform float uRoundCenterX;
 
 // --- Constants from Shadertoy ---
 const float PI = 3.141592;
@@ -101,6 +105,20 @@ void main(){
         // Facing along +/-Y → use XZ plane (top/bottom)
         uv = worldPos.xz;
     }
+
+    float alphaMultiplier = 1.0;
+    if (uRoundMask > 0.5) {
+        float roundRadius = max(uRoundRadius, 0.001);
+        vec2 roundUv = vec2((worldPos.x - uRoundCenterX) / roundRadius, worldPos.y / roundRadius);
+        float roundDist = dot(roundUv, roundUv);
+        float revealEdge = (uRoundCenterX - roundRadius) + (2.0 * roundRadius * clamp(uRoundProgress, 0.0, 1.0));
+        float roundAlpha = 1.0 - smoothstep(0.98, 1.02, roundDist);
+        if (worldPos.x > revealEdge || roundAlpha <= 0.0) {
+            discard;
+        }
+        alphaMultiplier = roundAlpha;
+    }
+
     uv = uv / uSize;
     vec3 baseColor = vec3(0.5, 0.8, 1.0);
 
@@ -141,5 +159,5 @@ void main(){
 
     // Modulate by incoming vertex color for integration/tint and alpha from vertex
     outColor *= vColor.rgb;
-    fragColor = vec4(outColor, vColor.a);
+    fragColor = vec4(outColor, vColor.a * alphaMultiplier);
 }

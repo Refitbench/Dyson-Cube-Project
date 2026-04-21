@@ -83,8 +83,8 @@ public class ClientProxy implements IProxy {
         registerItemModel(DCPContent.BEAM_PACKAGE, "beam_package");
 
         // Block item models
-        registerItemModel(Item.getItemFromBlock(DCPContent.EM_RAILEJECTOR_CONTROLLER), "em_railejector_controller");
-        registerItemModel(Item.getItemFromBlock(DCPContent.RAY_RECEIVER_CONTROLLER), "ray_receiver_controller");
+        registerItemModel(DCPContent.EM_RAILEJECTOR_CONTROLLER_ITEM, "em_railejector_controller");
+        registerItemModel(DCPContent.RAY_RECEIVER_CONTROLLER_ITEM, "ray_receiver_controller");
     }
 
     @SubscribeEvent
@@ -115,7 +115,7 @@ public class ClientProxy implements IProxy {
         if (beams > 0) {
             event.getToolTip().add("\u00a7b" + I18n.format("tooltip.dysoncubeproject.contains_beams", beams));
         }
-        if (stack.getItem() == Item.getItemFromBlock(DCPContent.EM_RAILEJECTOR_CONTROLLER)) {
+        if (stack.getItem() == DCPContent.EM_RAILEJECTOR_CONTROLLER_ITEM) {
             String key = Config.RAIL_EJECTOR_REQUIRE_POWER
                     ? "tooltip.dysoncubeproject.power_required"
                     : "tooltip.dysoncubeproject.power_optional";

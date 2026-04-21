@@ -81,6 +81,10 @@ public class RayReceiverRender extends TileEntitySpecialRenderer<RayReceiverTile
             DCPShaders.HOLO_HEX.setUniform1f("uValid", 1.0f);
             DCPShaders.HOLO_HEX.setUniform1f("uSize", 0.75f);
             DCPShaders.HOLO_HEX.setUniform1f("uIsSkyPass", 0.0f);
+            DCPShaders.HOLO_HEX.setUniform1f("uRoundMask", 0.0f);
+            DCPShaders.HOLO_HEX.setUniform1f("uRoundProgress", 1.0f);
+            DCPShaders.HOLO_HEX.setUniform1f("uRoundRadius", 1.0f);
+            DCPShaders.HOLO_HEX.setUniform1f("uRoundCenterX", 0.0f);
 
             Entity rv = mc.getRenderViewEntity();
             if (rv != null) {
