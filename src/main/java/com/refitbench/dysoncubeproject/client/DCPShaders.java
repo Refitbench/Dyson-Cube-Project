@@ -1,5 +1,6 @@
 package com.refitbench.dysoncubeproject.client;
 
+import com.refitbench.dysoncubeproject.DysonCubeProject;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -25,8 +26,7 @@ public class DCPShaders {
         ANY_AVAILABLE = HOLOGRAM != null || HOLO_HEX != null || DYSON_SUN != null || RAIL_ELECTRIC != null || RAIL_BEAM != null;
         RAIL_EFFECTS_AVAILABLE = RAIL_ELECTRIC != null && RAIL_BEAM != null;
 
-        System.out.println("[DysonCubeProject] OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
-        System.out.println("[DysonCubeProject] Shader summary: any=" + ANY_AVAILABLE
-            + ", railEffects=" + RAIL_EFFECTS_AVAILABLE);
+        DysonCubeProject.LOGGER.info("OpenGL version: {}", GL11.glGetString(GL11.GL_VERSION));
+        DysonCubeProject.LOGGER.info("Shader summary: any={}, railEffects={}", ANY_AVAILABLE, RAIL_EFFECTS_AVAILABLE);
     }
 }

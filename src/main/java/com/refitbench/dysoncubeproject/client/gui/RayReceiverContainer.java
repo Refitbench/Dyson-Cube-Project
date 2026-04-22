@@ -1,6 +1,7 @@
 package com.refitbench.dysoncubeproject.client.gui;
 
 import com.refitbench.dysoncubeproject.block.tile.RayReceiverTileEntity;
+import com.refitbench.dysoncubeproject.util.WritableEnergyStorage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
@@ -62,12 +63,12 @@ public class RayReceiverContainer extends Container {
         switch (id) {
             case 0 -> {
                 clientEnergyLow = data & 0xFFFF;
-                ((RayReceiverTileEntity.WritableEnergyStorage) tile.getEnergyStorage())
+                ((WritableEnergyStorage) tile.getEnergyStorage())
                         .setEnergyStored(clientEnergyLow | (clientEnergyHigh << 16));
             }
             case 1 -> {
                 clientEnergyHigh = data & 0xFFFF;
-                ((RayReceiverTileEntity.WritableEnergyStorage) tile.getEnergyStorage())
+                ((WritableEnergyStorage) tile.getEnergyStorage())
                         .setEnergyStored(clientEnergyLow | (clientEnergyHigh << 16));
             }
         }

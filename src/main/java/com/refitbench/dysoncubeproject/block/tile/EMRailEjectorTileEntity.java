@@ -3,6 +3,7 @@ package com.refitbench.dysoncubeproject.block.tile;
 import com.refitbench.dysoncubeproject.Config;
 import com.refitbench.dysoncubeproject.DCPContent;
 import com.refitbench.dysoncubeproject.item.DysonComponentItem;
+import com.refitbench.dysoncubeproject.util.WritableEnergyStorage;
 import com.refitbench.dysoncubeproject.world.DysonSphereProgressSavedData;
 import com.refitbench.dysoncubeproject.world.DysonSphereStructure;
 import net.minecraft.block.state.IBlockState;
@@ -226,22 +227,6 @@ public class EMRailEjectorTileEntity extends TileEntity implements ITickable {
     public void setClientProgress(int progress) { this.progress = progress; }
     public void setClientMaxProgress(int maxProgress) { this.maxProgress = maxProgress; }
 
-    // --- WritableEnergyStorage ---
-
-    public static class WritableEnergyStorage extends EnergyStorage {
-        public WritableEnergyStorage(int capacity, int maxReceive, int maxExtract) {
-            super(capacity, maxReceive, maxExtract);
-        }
-
-        public void setEnergyStored(int energy) {
-            this.energy = Math.clamp(energy, 0, capacity);
-        }
-
-        public void drainInternal(int amount) {
-            this.energy = Math.max(0, this.energy - amount);
-        }
-    }
-
     // --- NBT ---
 
     @Override
@@ -299,6 +284,12 @@ public class EMRailEjectorTileEntity extends TileEntity implements ITickable {
             pos.getX() - 1, pos.getY(), pos.getZ() - 1,
             pos.getX() + 2, pos.getY() + 5, pos.getZ() + 2
         );
+    }
+
+    // TE Render Range.
+    public double getMaxRenderDistanceSquared() {
+        double d = Config.TESR_RENDER_DISTANCE;
+        return d * d;
     }
 
     // --- Capabilities (hasCapability/getCapability added to TileEntity at runtime via Forge ASM) ---
