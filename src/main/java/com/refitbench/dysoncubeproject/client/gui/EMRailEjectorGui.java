@@ -11,6 +11,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 
 public class EMRailEjectorGui extends GuiContainer {
@@ -171,7 +172,7 @@ public class EMRailEjectorGui extends GuiContainer {
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
         if (mouseX >= guiLeft + SUB_X && mouseX <= guiLeft + SUB_X + BTN_PULL_W
                 && mouseY >= guiTop + SUB_Y && mouseY <= guiTop + SUB_Y + BTN_PULL_H) {
