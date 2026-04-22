@@ -2,6 +2,7 @@ package com.refitbench.dysoncubeproject.block.tile;
 
 import com.refitbench.dysoncubeproject.Config;
 import com.refitbench.dysoncubeproject.DCPContent;
+import com.refitbench.dysoncubeproject.util.WritableEnergyStorage;
 import com.refitbench.dysoncubeproject.world.DysonSphereProgressSavedData;
 import com.refitbench.dysoncubeproject.world.DysonSphereStructure;
 import net.minecraft.nbt.NBTTagCompound;
@@ -106,18 +107,6 @@ public class RayReceiverTileEntity extends TileEntity implements ITickable {
 
     public float getCurrentPitch() { return currentPitch; }
     public EnergyStorage getEnergyStorage() { return energyStorage; }
-
-    // --- WritableEnergyStorage ---
-
-    public static class WritableEnergyStorage extends EnergyStorage {
-        public WritableEnergyStorage(int capacity, int maxReceive, int maxExtract) {
-            super(capacity, maxReceive, maxExtract);
-        }
-
-        public void setEnergyStored(int energy) {
-            this.energy = Math.clamp(energy, 0, capacity);
-        }
-    }
 
     // --- NBT ---
 

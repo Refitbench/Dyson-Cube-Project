@@ -1,6 +1,7 @@
 package com.refitbench.dysoncubeproject.client.gui;
 
 import com.refitbench.dysoncubeproject.block.tile.EMRailEjectorTileEntity;
+import com.refitbench.dysoncubeproject.util.WritableEnergyStorage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
@@ -69,12 +70,12 @@ public class EMRailEjectorContainer extends Container {
         switch (id) {
             case 0 -> {
                 clientEnergyLow = data & 0xFFFF;
-                ((EMRailEjectorTileEntity.WritableEnergyStorage) tile.getPower())
+                ((WritableEnergyStorage) tile.getPower())
                         .setEnergyStored(clientEnergyLow | (clientEnergyHigh << 16));
             }
             case 1 -> {
                 clientEnergyHigh = data & 0xFFFF;
-                ((EMRailEjectorTileEntity.WritableEnergyStorage) tile.getPower())
+                ((WritableEnergyStorage) tile.getPower())
                         .setEnergyStored(clientEnergyLow | (clientEnergyHigh << 16));
             }
             case 2 -> tile.setClientProgress(data);
