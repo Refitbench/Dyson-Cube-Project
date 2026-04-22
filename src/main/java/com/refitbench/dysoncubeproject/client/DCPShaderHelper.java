@@ -1,5 +1,6 @@
 package com.refitbench.dysoncubeproject.client;
 
+import com.refitbench.dysoncubeproject.DysonCubeProject;
 import com.refitbench.dysoncubeproject.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
@@ -47,8 +48,8 @@ public class DCPShaderHelper {
                     throw primaryError;
                 }
 
-                System.err.println("[DysonCubeProject] Falling back to GLSL 120 profile for shader '" + name + "'.");
-                System.err.println("[DysonCubeProject] Primary compile error: " + primaryError.getMessage());
+                DysonCubeProject.LOGGER.warn("Falling back to GLSL 120 profile for shader '{}'.", name);
+                DysonCubeProject.LOGGER.warn("Primary compile error: {}", primaryError.getMessage());
                 vsh = compileShader(GL20.GL_VERTEX_SHADER, vLegacy, name + ".vsh [legacy120]");
                 fsh = compileShader(GL20.GL_FRAGMENT_SHADER, fLegacy, name + ".fsh [legacy120]");
                 legacyProfile = true;
@@ -68,7 +69,7 @@ public class DCPShaderHelper {
                 GL20.glDeleteProgram(program);
                 GL20.glDeleteShader(vsh);
                 GL20.glDeleteShader(fsh);
-                System.err.println("[DysonCubeProject] Shader link failed for " + name + ": " + log);
+                DysonCubeProject.LOGGER.error("Shader link failed for {}: {}", name, log);
                 return null;
             }
 
@@ -80,8 +81,7 @@ public class DCPShaderHelper {
 
             return new DCPShaderHelper(program, legacyProfile);
         } catch (Exception e) {
-            System.err.println("[DysonCubeProject] Failed to load shader: " + name);
-            e.printStackTrace();
+            DysonCubeProject.LOGGER.error("Failed to load shader: {}", name, e);
             return null;
         }
     }
