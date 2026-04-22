@@ -286,6 +286,11 @@ public class EMRailEjectorTileEntity extends TileEntity implements ITickable {
         );
     }
 
+    // TE Render Range.
+    public double getMaxRenderDistanceSquared() {
+        return 16384.0D; // 128 blocks
+    }
+
     // --- Capabilities (hasCapability/getCapability added to TileEntity at runtime via Forge ASM) ---
 
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {

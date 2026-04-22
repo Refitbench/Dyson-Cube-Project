@@ -96,6 +96,11 @@ public class RayReceiverTileEntity extends TileEntity implements ITickable {
         );
     }
 
+    // TE Render Range.
+    public double getMaxRenderDistanceSquared() {
+        return 16384.0D; // 128 blocks
+    }
+
     // --- Getters/Setters ---
 
     public String getDysonSphereId() { return dysonSphereId; }
