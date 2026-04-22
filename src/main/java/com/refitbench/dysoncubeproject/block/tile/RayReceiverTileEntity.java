@@ -98,7 +98,8 @@ public class RayReceiverTileEntity extends TileEntity implements ITickable {
 
     // TE Render Range.
     public double getMaxRenderDistanceSquared() {
-        return 16384.0D; // 128 blocks
+        double d = Config.TESR_RENDER_DISTANCE;
+        return d * d;
     }
 
     // --- Getters/Setters ---
