@@ -4,6 +4,9 @@
 ### Added
 - Tile Entity render range configuration (Default 128)
 
+### Changed
+- [Align with original project simplified chinese translation#5 by ZHAY10086](https://github.com/Refitbench/Dyson-Cube-Project/pull/5)
+
 ### Fixed
 - Deduplicated WritableEnergyStorage method, moved to util.
 - Unify loggers to use mod logger methods.
