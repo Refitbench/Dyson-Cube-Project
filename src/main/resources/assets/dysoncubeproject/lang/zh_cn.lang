@@ -26,5 +26,5 @@ tooltip.dysoncubeproject.contains_beams=包含 %s 个结构梁
 tooltip.dysoncubeproject.contains_solar_sails=包含 %s 个太阳帆
 tooltip.dysoncubeproject.power_optional=*供电可选，供电后可提升弹射的结构梁/太阳帆数量*
 tooltip.dysoncubeproject.power_required=*必须供电，弹射器需要 FE 才能发射结构梁/太阳帆*
-dysoncubeproject.subtitle.railgun=弹射器：发射
+dysoncubeproject.subtitle.railgun=轨道炮：发射
 dysoncubeproject.subtitle.ray=射线接收站：嗡鸣
