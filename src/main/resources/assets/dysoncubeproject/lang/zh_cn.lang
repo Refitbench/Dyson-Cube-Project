@@ -22,6 +22,7 @@ gui.dysoncubeproject.power_gen=能量产出：%s FE
 gui.dysoncubeproject.progress=进度：%s%%
 gui.dysoncubeproject.sails=太阳帆：%s/%s
 gui.dysoncubeproject.subscribe=绑定至此戴森球
+gui.dysoncubeproject.unsubscribe=解除绑定（您将返回个人戴森球）
 tooltip.dysoncubeproject.contains_beams=包含 %s 个结构梁
 tooltip.dysoncubeproject.contains_solar_sails=包含 %s 个太阳帆
 tooltip.dysoncubeproject.power_optional=*供电可选，供电后可提升弹射的结构梁/太阳帆数量*

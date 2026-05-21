@@ -35,7 +35,11 @@ public class ClientSubscribeSphereMessage implements IMessage {
             player.getServerWorld().addScheduledTask(() -> {
                 var data = DysonSphereProgressSavedData.get(player.getServerWorld());
                 if (data != null && message.sphereId != null) {
-                    data.getSubscribedPlayers().put(player.getUniqueID().toString(), message.sphereId);
+                    if (message.sphereId.equals("-")) {
+                        data.getSubscribedPlayers().remove(player.getUniqueID().toString());
+                    } else {
+                        data.getSubscribedPlayers().put(player.getUniqueID().toString(), message.sphereId);
+                    }
                     data.markDirty();
                 }
             });

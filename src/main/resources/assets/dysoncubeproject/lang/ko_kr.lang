@@ -22,6 +22,7 @@ gui.dysoncubeproject.power_gen=전력 생산: %s FE
 gui.dysoncubeproject.progress=진행도: %s%%
 gui.dysoncubeproject.sails=세일: %s/%s
 gui.dysoncubeproject.subscribe=이 구독 대상에 연결
+gui.dysoncubeproject.unsubscribe=구독 취소 (개인 구체로 돌아갑니다)
 tooltip.dysoncubeproject.contains_beams=%s개의 빔 포함
 tooltip.dysoncubeproject.contains_solar_sails=%s개의 솔라 세일 포함
 tooltip.dysoncubeproject.power_optional=*전력은 선택 사항이며, 전력을 공급하면 발사되는 빔/세일 수가 증가합니다*

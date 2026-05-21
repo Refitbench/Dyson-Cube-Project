@@ -12,7 +12,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 
 public class RayReceiverGui extends GuiContainer {
@@ -29,6 +28,7 @@ public class RayReceiverGui extends GuiContainer {
     private static final int ENERGY_X = 19, ENERGY_Y = 22;
     private static final int INFO_X = 56, INFO_Y = 24;
     private static final int SUB_X = 9, SUB_Y = 80;
+    private static final int UNSUB_X = SUB_X + 18, UNSUB_Y = SUB_Y;
 
     // Titanium texture UV coordinates (same sheet as em_railejector)
     private static final int ENERGY_BG_U = 177, ENERGY_BG_V = 94, ENERGY_BG_W = 18, ENERGY_BG_H = 56;
@@ -83,6 +83,10 @@ public class RayReceiverGui extends GuiContainer {
         // Subscribe button
         drawTexturedModalRect(guiLeft + SUB_X, guiTop + SUB_Y,
                 BTN_PULL_U, BTN_PULL_V, BTN_PULL_W, BTN_PULL_H);
+
+        // Unsubscribe button
+        drawTexturedModalRect(guiLeft + UNSUB_X, guiTop + UNSUB_Y,
+                BTN_PULL_U, BTN_PULL_V, BTN_PULL_W, BTN_PULL_H);
     }
 
     @Override
@@ -136,7 +140,13 @@ public class RayReceiverGui extends GuiContainer {
         // Subscribe button tooltip
         if (mouseX >= guiLeft + SUB_X && mouseX <= guiLeft + SUB_X + BTN_PULL_W
                 && mouseY >= guiTop + SUB_Y && mouseY <= guiTop + SUB_Y + BTN_PULL_H) {
-            drawHoveringText("Subscribe to this sphere", mouseX - guiLeft, mouseY - guiTop);
+            drawHoveringText(I18n.format("gui.dysoncubeproject.subscribe"), mouseX - guiLeft, mouseY - guiTop);
+        }
+
+        // Unsubscribe button tooltip
+        if (mouseX >= guiLeft + UNSUB_X && mouseX <= guiLeft + UNSUB_X + BTN_PULL_W
+                && mouseY >= guiTop + UNSUB_Y && mouseY <= guiTop + UNSUB_Y + BTN_PULL_H) {
+            drawHoveringText(I18n.format("gui.dysoncubeproject.unsubscribe"), mouseX - guiLeft, mouseY - guiTop);
         }
     }
 
@@ -146,6 +156,9 @@ public class RayReceiverGui extends GuiContainer {
         if (mouseX >= guiLeft + SUB_X && mouseX <= guiLeft + SUB_X + BTN_PULL_W
                 && mouseY >= guiTop + SUB_Y && mouseY <= guiTop + SUB_Y + BTN_PULL_H) {
             DCPNetworkHandler.INSTANCE.sendToServer(new ClientSubscribeSphereMessage(tile.getDysonSphereId()));
+        } else if (mouseX >= guiLeft + UNSUB_X && mouseX <= guiLeft + UNSUB_X + BTN_PULL_W
+                && mouseY >= guiTop + UNSUB_Y && mouseY <= guiTop + UNSUB_Y + BTN_PULL_H) {
+            DCPNetworkHandler.INSTANCE.sendToServer(new ClientSubscribeSphereMessage("-"));
         }
     }
 

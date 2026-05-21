@@ -22,6 +22,7 @@ gui.dysoncubeproject.power_gen=発電量: %s FE
 gui.dysoncubeproject.progress=進捗: %s%%
 gui.dysoncubeproject.sails=セイル: %s/%s
 gui.dysoncubeproject.subscribe=このダイソン球を購読する
+gui.dysoncubeproject.unsubscribe=購読解除（個人のダイソン球に戻ります）
 tooltip.dysoncubeproject.contains_beams=構造梁%sつ分
 tooltip.dysoncubeproject.contains_solar_sails=ソーラーセイル%sつ分
 tooltip.dysoncubeproject.power_optional=*電力は任意です。供給すると梁/セイルの射出数が加速します*

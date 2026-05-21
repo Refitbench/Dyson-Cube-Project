@@ -22,6 +22,7 @@ gui.dysoncubeproject.power_gen=Geração de energia: %s FE
 gui.dysoncubeproject.progress=Progresso: %s%%
 gui.dysoncubeproject.sails=Velas: %s/%s
 gui.dysoncubeproject.subscribe=Inscrever-se nesta esfera
+gui.dysoncubeproject.unsubscribe=Cancelar inscrição (Você voltará para sua esfera pessoal)
 tooltip.dysoncubeproject.contains_beams=Contém %s feixe(s)
 tooltip.dysoncubeproject.contains_solar_sails=Contém %s vela(s) solar(es)
 tooltip.dysoncubeproject.power_optional=*Energia opcional; com energia, aumenta a quantidade de feixes/velas ejetados*

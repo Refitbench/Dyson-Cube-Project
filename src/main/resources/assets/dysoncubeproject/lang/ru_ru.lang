@@ -22,6 +22,7 @@ gui.dysoncubeproject.power_gen=Генерация: %s FE
 gui.dysoncubeproject.progress=Прогресс: %s%%
 gui.dysoncubeproject.sails=Паруса: %s/%s
 gui.dysoncubeproject.subscribe=Подписаться на эту сферу
+gui.dysoncubeproject.unsubscribe=Отписаться (Вы вернётесь к своей личной сфере)
 tooltip.dysoncubeproject.contains_beams=Содержит лучей: %s
 tooltip.dysoncubeproject.contains_solar_sails=Содержит солнечных парусов: %s
 tooltip.dysoncubeproject.power_optional=*Питание необязательно, с питанием ускоряется запуск лучей/парусов*

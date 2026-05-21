@@ -22,6 +22,7 @@ gui.dysoncubeproject.power_gen=Power Gen: %s FE
 gui.dysoncubeproject.progress=Progress: %s%%
 gui.dysoncubeproject.sails=Sails: %s/%s
 gui.dysoncubeproject.subscribe=Subscribe to this sphere
+gui.dysoncubeproject.unsubscribe=Unsubscribe (You will return to your personal sphere)
 tooltip.dysoncubeproject.contains_beams=Contains %s beam(s)
 tooltip.dysoncubeproject.contains_solar_sails=Contains %s solar sail(s)
 tooltip.dysoncubeproject.power_optional=*Power Optional, with power it allows to ramp up how many beams/sails are ejected*

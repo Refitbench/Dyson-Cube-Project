@@ -22,6 +22,7 @@ gui.dysoncubeproject.power_gen=Production d'énergie : %s FE
 gui.dysoncubeproject.progress=Progression : %s%%
 gui.dysoncubeproject.sails=Voiles : %s/%s
 gui.dysoncubeproject.subscribe=S'abonner à cette sphère
+gui.dysoncubeproject.unsubscribe=Se désabonner (Vous retournerez à votre sphère personnelle)
 tooltip.dysoncubeproject.contains_beams=Contient %s rayon(x)
 tooltip.dysoncubeproject.contains_solar_sails=Contient %s voile(s) solaire(s)
 tooltip.dysoncubeproject.power_optional=*Énergie optionnelle : avec énergie, le nombre de rayons/voiles éjectés augmente*
