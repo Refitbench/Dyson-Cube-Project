@@ -9,6 +9,7 @@ import com.refitbench.dysoncubeproject.world.ClientDysonSphere;
 import com.refitbench.dysoncubeproject.world.DysonSphereStructure;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;
@@ -86,7 +87,7 @@ public class RayReceiverGui extends GuiContainer {
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        String title = "Ray Receiver Controller";
+        String title = I18n.format("tile.dysoncubeproject.ray_receiver_controller.name");
         fontRenderer.drawString(title, (xSize - fontRenderer.getStringWidth(title)) / 2, 6, 0x404040);
 
         var sphere = ClientDysonSphere.DYSON_SPHERE_PROGRESS.getSpheres()
@@ -96,20 +97,20 @@ public class RayReceiverGui extends GuiContainer {
         int lineH = fontRenderer.FONT_HEIGHT + 1;
         int color = 0x5555FF;
 
-        fontRenderer.drawString("Dyson Information", x, y, color);
+        fontRenderer.drawString(I18n.format("gui.dysoncubeproject.dyson_information"), x, y, color);
         y += lineH;
-        fontRenderer.drawString("Progress: " + new DecimalFormat().format(sphere.getProgress() * 100) + "%", x, y, color);
+        fontRenderer.drawString(I18n.format("gui.dysoncubeproject.progress", new DecimalFormat().format(sphere.getProgress() * 100)), x, y, color);
         y += lineH;
-        fontRenderer.drawString("Power Gen: " + NumberUtils.getFormattedBigNumber((double) sphere.getSolarPanels() * Config.POWER_PER_SAIL) + " FE", x, y, color);
+        fontRenderer.drawString(I18n.format("gui.dysoncubeproject.power_gen", NumberUtils.getFormattedBigNumber((double) sphere.getSolarPanels() * Config.POWER_PER_SAIL)), x, y, color);
         y += lineH;
-        fontRenderer.drawString("Power Con: " + NumberUtils.getFormattedBigNumber(sphere.getLastConsumedPower()) + " FE", x, y, color);
+        fontRenderer.drawString(I18n.format("gui.dysoncubeproject.power_con", NumberUtils.getFormattedBigNumber(sphere.getLastConsumedPower())), x, y, color);
         y += lineH;
-        fontRenderer.drawString("Beams: " + NumberUtils.getFormattedBigNumber(sphere.getBeams()), x, y, color);
+        fontRenderer.drawString(I18n.format("gui.dysoncubeproject.beams", new DecimalFormat().format(sphere.getBeams())), x, y, color);
         y += lineH;
-        fontRenderer.drawString("Sails: " + NumberUtils.getFormattedBigNumber(sphere.getSolarPanels()) + "/" + NumberUtils.getFormattedBigNumber(sphere.getMaxSolarPanels()), x, y, color);
+        fontRenderer.drawString(I18n.format("gui.dysoncubeproject.sails", new DecimalFormat().format(sphere.getSolarPanels()), NumberUtils.getFormattedBigNumber(sphere.getMaxSolarPanels())), x, y, color);
         y += lineH;
         if (sphere.getSolarPanels() >= sphere.getMaxSolarPanels()) {
-            fontRenderer.drawString("Needs more beams", x, y, 0xFF5555);
+            fontRenderer.drawString(I18n.format("gui.dysoncubeproject.needs_more_beams"), x, y, 0xFF5555);
             y += lineH;
         }
 
