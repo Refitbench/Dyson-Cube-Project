@@ -28,7 +28,7 @@ public class EMRailEjectorGui extends GuiContainer {
     private static final int ENERGY_X = 26, ENERGY_Y = 24;
     private static final int PROGRESS_X = 45, PROGRESS_Y = 24;
     private static final int INFO_X = 62, INFO_Y = 24;
-    private static final int SUB_X = 9, SUB_Y = 78;
+    private static final int SUB_X = 9, SUB_Y = 82;
     private static final int UNSUB_X = SUB_X + 18, UNSUB_Y = SUB_Y;
     private static final int INPUT_X = 4, INPUT_Y = 37;
 
