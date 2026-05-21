@@ -36,7 +36,7 @@ public class DysonSphereStructure {
     }
 
     public int getMaxSolarPanels() {
-        return beams * Config.BEAM_TO_SOLAR_PANEL_RATIO;
+        return Math.min(Config.MAX_SOLAR_PANELS, beams * Config.BEAM_TO_SOLAR_PANEL_RATIO);
     }
 
     public double getProgress() {
@@ -44,7 +44,7 @@ public class DysonSphereStructure {
     }
 
     public int getMaxBeams() {
-        return Config.MAX_SOLAR_PANELS / Config.BEAM_TO_SOLAR_PANEL_RATIO;
+        return (int) Math.ceil(Config.MAX_SOLAR_PANELS / (double) Config.BEAM_TO_SOLAR_PANEL_RATIO);
     }
 
     public void increaseBeams(int amount) {

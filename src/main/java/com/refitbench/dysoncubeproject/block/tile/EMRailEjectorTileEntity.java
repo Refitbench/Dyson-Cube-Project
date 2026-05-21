@@ -157,7 +157,7 @@ public class EMRailEjectorTileEntity extends TileEntity implements ITickable {
         var stack = input.getStackInSlot(0);
         var solarPanels = DysonComponentItem.getSolarSailCount(stack);
         var beams = DysonComponentItem.getBeamCount(stack);
-        if (solarPanels > 0 && (dyson.getSolarPanels() + solarPanels) >= dyson.getMaxSolarPanels()) return false;
+        if (solarPanels > 0 && (dyson.getSolarPanels() + solarPanels) > dyson.getMaxSolarPanels()) return false;
         if (beams > 0 && dyson.getBeams() >= dyson.getMaxBeams()) return false;
 
         int requiredPower = (int) (Math.pow(rampupAmount, 2) * Config.RAIL_EJECTOR_CONSUME);

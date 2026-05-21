@@ -141,7 +141,7 @@ public class EMRailEjectorGui extends GuiContainer {
         y += lineH;
         fontRenderer.drawString(I18n.format("gui.dysoncubeproject.sails", new DecimalFormat().format(sphere.getSolarPanels()), NumberUtils.getFormattedBigNumber(sphere.getMaxSolarPanels())), x, y, color);
         y += lineH;
-        if (sphere.getSolarPanels() >= sphere.getMaxSolarPanels()) {
+        if (sphere.getSolarPanels() >= sphere.getMaxSolarPanels() && sphere.getSolarPanels() < Config.MAX_SOLAR_PANELS) {
             fontRenderer.drawString(I18n.format("gui.dysoncubeproject.needs_more_beams"), x, y, 0xFF5555);
             y += lineH;
         }
