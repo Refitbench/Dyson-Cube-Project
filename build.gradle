@@ -128,6 +128,7 @@ sourceSets {
                 property('mod_id', propertyString('mod_id'))
                 property('mod_name', propertyString('mod_name'))
                 property('mod_version', propertyString('mod_version'))
+                property('mod_update_json', propertyString('mod_update_json'))
                 property('package', "${root_package}.${mod_id}")
             }
             resources {
