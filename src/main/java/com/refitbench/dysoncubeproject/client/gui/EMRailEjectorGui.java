@@ -172,7 +172,7 @@ public class EMRailEjectorGui extends GuiContainer {
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         super.mouseClicked(mouseX, mouseY, mouseButton);
         if (mouseX >= guiLeft + SUB_X && mouseX <= guiLeft + SUB_X + BTN_PULL_W
                 && mouseY >= guiTop + SUB_Y && mouseY <= guiTop + SUB_Y + BTN_PULL_H) {
